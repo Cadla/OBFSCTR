@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Obfuscator.Test.MultipleInterfacesInheritance.Class">
+    <Position X="4" Y="7.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AgAAAACAAAAAAAEAAAAAACAAAAAAAAAAAAQEAAAAAAE=</HashCode>
+      <FileName>Class.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.IBaseA">
+    <Position X="4.25" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IBaseA.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.IBaseB">
+    <Position X="7.5" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>IBaseB.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.IMiddle">
+    <Position X="6" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IMiddle.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.ISameAsBaseB">
+    <Position X="9.5" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>ISameAsBaseB.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.IFinal">
+    <Position X="7.75" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>IFinal.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Obfuscator.Test.MultipleInterfacesInheritance.IBaseARedefinition">
+    <Position X="2.5" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IBaseARedefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
