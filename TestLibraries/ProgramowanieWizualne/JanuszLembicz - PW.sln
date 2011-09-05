@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{570B62A1-23CF-4CA8-A4A1-1840A4448877}"
+	ProjectSection(SolutionItems) = preProject
+		JanuszLembicz - PW.vsmdi = JanuszLembicz - PW.vsmdi
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.Utils", "JanuszLembicz.Utils\JanuszLembicz.Utils.csproj", "{BADA7F18-FB2D-4096-AC1E-98D053A669D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.BLC", "JanuszLembicz.PW.BLC\JanuszLembicz.PW.BLC.csproj", "{E7C3DFA6-F2E3-47B1-B55E-4C2513964450}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.Common", "JanuszLembicz.PW.Common\JanuszLembicz.PW.Common.csproj", "{53CB3588-5E03-4BE7-AC9A-A98FF35DAE1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.Interfaces", "JanuszLembicz.PW.Interfaces\JanuszLembicz.PW.Interfaces.csproj", "{2A9A6864-E29E-468B-B0D9-1A763720BD4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.DAL.Mock", "JanuszLembicz.PW.DAL.Mock\JanuszLembicz.PW.DAL.Mock.csproj", "{37796370-615A-4C16-92E6-1F9D4C9630A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.DAL.Linq", "JanuszLembicz.PW.DAL.Linq\JanuszLembicz.PW.DAL.Linq.csproj", "{4064A1B5-1AF8-4F09-B3A4-83EA27F608A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.UI.Foms", "JanuszLembicz.PW.UI.Forms\JanuszLembicz.PW.UI.Foms.csproj", "{D541E6A2-1235-44BE-B0A9-0720819A8942}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.UI.Form.Utils", "JanuszLembicz.PW.UI.Form.Utils\JanuszLembicz.PW.UI.Form.Utils.csproj", "{D3236B7F-E5BE-44B0-AEF9-5F2CED7403E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.UI.Web", "JanuszLembicz.PW.UI.Web\JanuszLembicz.PW.UI.Web.csproj", "{02335809-528D-4938-8F52-AB5BF82DD39A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanuszLembicz.PW.BLC.Tests", "JanuszLembicz.PW.BLC.Tests\JanuszLembicz.PW.BLC.Tests.csproj", "{FB96FC2C-C2CB-4944-905A-B860936879AE}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = JanuszLembicz - PW.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BADA7F18-FB2D-4096-AC1E-98D053A669D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BADA7F18-FB2D-4096-AC1E-98D053A669D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BADA7F18-FB2D-4096-AC1E-98D053A669D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BADA7F18-FB2D-4096-AC1E-98D053A669D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7C3DFA6-F2E3-47B1-B55E-4C2513964450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7C3DFA6-F2E3-47B1-B55E-4C2513964450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7C3DFA6-F2E3-47B1-B55E-4C2513964450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7C3DFA6-F2E3-47B1-B55E-4C2513964450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53CB3588-5E03-4BE7-AC9A-A98FF35DAE1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53CB3588-5E03-4BE7-AC9A-A98FF35DAE1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53CB3588-5E03-4BE7-AC9A-A98FF35DAE1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53CB3588-5E03-4BE7-AC9A-A98FF35DAE1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A9A6864-E29E-468B-B0D9-1A763720BD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A9A6864-E29E-468B-B0D9-1A763720BD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A9A6864-E29E-468B-B0D9-1A763720BD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A9A6864-E29E-468B-B0D9-1A763720BD4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37796370-615A-4C16-92E6-1F9D4C9630A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37796370-615A-4C16-92E6-1F9D4C9630A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37796370-615A-4C16-92E6-1F9D4C9630A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37796370-615A-4C16-92E6-1F9D4C9630A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4064A1B5-1AF8-4F09-B3A4-83EA27F608A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4064A1B5-1AF8-4F09-B3A4-83EA27F608A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4064A1B5-1AF8-4F09-B3A4-83EA27F608A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4064A1B5-1AF8-4F09-B3A4-83EA27F608A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D541E6A2-1235-44BE-B0A9-0720819A8942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D541E6A2-1235-44BE-B0A9-0720819A8942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D541E6A2-1235-44BE-B0A9-0720819A8942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D541E6A2-1235-44BE-B0A9-0720819A8942}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3236B7F-E5BE-44B0-AEF9-5F2CED7403E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3236B7F-E5BE-44B0-AEF9-5F2CED7403E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3236B7F-E5BE-44B0-AEF9-5F2CED7403E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3236B7F-E5BE-44B0-AEF9-5F2CED7403E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02335809-528D-4938-8F52-AB5BF82DD39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02335809-528D-4938-8F52-AB5BF82DD39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02335809-528D-4938-8F52-AB5BF82DD39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02335809-528D-4938-8F52-AB5BF82DD39A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB96FC2C-C2CB-4944-905A-B860936879AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB96FC2C-C2CB-4944-905A-B860936879AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB96FC2C-C2CB-4944-905A-B860936879AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB96FC2C-C2CB-4944-905A-B860936879AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

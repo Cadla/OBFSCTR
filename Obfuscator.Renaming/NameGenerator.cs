@@ -4,52 +4,43 @@ using System.Text;
 
 namespace Obfuscator.Renaming
 {
-    public class NameGenerator
+    public interface INameGenerator
+    {
+        string GetNext(string last);
+    }
+
+    public class NameGenerator : INameGenerator
     {
         private string _alphabet;
-        private const int _maxLength = 20;
+        private StringBuilder builder = new StringBuilder();
 
-        // TODO change StringBuilder to string
-        IDictionary<string, StringBuilder> names = new Dictionary<string, StringBuilder>();
 
         public NameGenerator(string alphabet)
         {
-            _alphabet = alphabet;
+            _alphabet = alphabet;            
         }
 
-        // LOOKUP Path.GetRandomFileName BaseBMethod
 
-        public string GetName(string scope)
+        public string GetNext(string last)
         {
-            if (!names.ContainsKey(scope))
-            {
-                names[scope] = new StringBuilder();
-            }
-            GetNext(names[scope]);
-            return names[scope].ToString();
-        }
+            builder.Clear();
+            builder.Append(last);
 
-        private void GetNext(StringBuilder last)
-        {
             for (int i = last.Length - 1; i >= 0; i--)
             {
                 int index = _alphabet.IndexOf(last[i]);
                 if (index != _alphabet.Length - 1)
                 {
-                    last[i] = _alphabet[index + 1];
-                    return;
+                    builder[i] = _alphabet[index + 1];
+                    return builder.ToString();
                 }
                 else
                 {
-                    last[i] = _alphabet[0];
+                    builder[i] = _alphabet[0];
                 }
             }
-            last.Insert(0, _alphabet[0]);
-
-            if (last.Length > _maxLength)
-                // TODO change to specific exception type
-                throw new Exception();
-
+            builder.Insert(0, _alphabet[0]);
+            return builder.ToString();
         }
     }
 }

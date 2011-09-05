@@ -43,12 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="FixVirtualMethodsNaminVisitor.cs" />
+    <Compile Include="ScopeHashGenerator.cs" />
+    <Compile Include="ScopeSth.cs" />
     <Compile Include="TypeMap.cs" />
     <Compile Include="NameGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameVisitor.cs" />
     <Compile Include="RenameVisitor.logging.cs" />
+    <Compile Include="Visitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThirdParty\Cecil 1\Mono.Cecil.csproj">
@@ -62,6 +67,14 @@
     <ProjectReference Include="..\Obfuscator.Utils\Obfuscator.Utils.csproj">
       <Project>{E10298D8-872D-47EB-BEFC-9FD00E78A296}</Project>
       <Name>Obfuscator.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThirdParty\Cecil 1\symbols\pdb\Mono.Cecil.Pdb.csproj">
+      <Project>{63E6915C-7EA4-4D76-AB28-0D7191EEA626}</Project>
+      <Name>Mono.Cecil.Pdb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThirdParty\CommandLine\src\libcmdline\CommandLine.csproj">
+      <Project>{5DEA2811-2FFA-4959-830B-CAD3ACACABEB}</Project>
+      <Name>CommandLine</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

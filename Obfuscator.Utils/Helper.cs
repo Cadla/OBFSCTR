@@ -237,6 +237,7 @@ namespace Obfuscator.Utils
             if (count == 0)
                 return true;
 
+            // TODO order doesn't count
             for (int i = 0; i < count; i++)
                 if (!AreSame(a[i].ParameterType, b[i].ParameterType))
                     return false;
@@ -394,41 +395,7 @@ namespace Obfuscator.Utils
             return null;
         }
 
-        //TODO check wheter library.dll and library.exe are different scope names char separator = type.DeclaringType.IsNested ? '/' : '.';
-        public static string GetTypeScope(TypeDefinition type)
-        {
-            if (type.IsNested)
-            {
-                char separator = type.DeclaringType.IsNested ? '/' : '.';
-                return GetScope(type.DeclaringType) + separator + type.DeclaringType.Name;
-            }
-            return type.Namespace;
-        }
-
-        public static string GetScope(IMemberDefinition member)
-        {
-            TypeDefinition type = member as TypeDefinition;
-
-            if (type != null)
-                return GetTypeScope(type);
-
-            StringBuilder scope = new StringBuilder();
-            TypeDefinition declaringType = member.DeclaringType;
-
-            scope.Append(GetTypeScope(declaringType));
-            char separator = member.DeclaringType.IsNested ? '/' : '.';
-            scope.Append(separator);
-            scope.Append(declaringType.Name);
-            scope.Append("::");
-            scope.Append(member.MetadataToken.TokenType.ToString());
-
-            MethodDefinition method = member as MethodDefinition;
-            if (method != null)
-                scope.Append(GetMethodParametersString(method));
-
-            return scope.ToString();
-        }
-
+     
         //public static string GetMethodSignatureString(MethodReference method)
         //{
         //    StringBuilder signature = new StringBuilder();
@@ -439,20 +406,6 @@ namespace Obfuscator.Utils
 
 
 
-        private static string GetMethodParametersString(MethodReference method)
-        {
-            StringBuilder list = new StringBuilder();
-            if (method.HasParameters)
-            {
-                list.Append("(");
-                foreach (var param in method.Parameters)
-                {
-                    list.Append(param.ParameterType.FullName + ",");
-                }
-                list.Remove(list.Length - 1, 1);
-                list.Append(")");
-            }
-            return list.ToString();
-        }
+      
     }
 }

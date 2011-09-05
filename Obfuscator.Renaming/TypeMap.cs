@@ -7,18 +7,16 @@ using Obfuscator.Utils;
 
 namespace Obfuscator.Renaming
 {
-    public class TypeMap //: NullAssemblyVisitor
+    public class TypeTree //: NullAssemblyVisitor
     {
         IList<AssemblyDefinition> _assemblies;
 
-        IDictionary<string, IList<MethodDefinition>> relatedMethods_;
-
-        public TypeMap(AssemblyDefinition assembly) 
+        public TypeTree(AssemblyDefinition assembly) 
         {
             _assemblies.Add(assembly);
         }
 
-        public TypeMap(IList<AssemblyDefinition> assemblies)
+        public TypeTree(IList<AssemblyDefinition> assemblies)
         {
             _assemblies = assemblies;
         }

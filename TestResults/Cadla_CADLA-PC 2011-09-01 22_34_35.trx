@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="397323d2-fd65-4eb9-ba2e-1c61ecff207e" name="Cadla@CADLA-PC 2011-09-01 22:34:35" runUser="Cadla-PC\Cadla" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Default Test Settings" id="ee692bf9-764b-4e18-afa4-f511521c1e31">
+    <Deployment runDeploymentRoot="Cadla_CADLA-PC 2011-09-01 22_34_35">
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\Obfuscator.Renaming\bin\Debug\Obfuscator.Renaming.exe" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.Inheritance\bin\Debug\Obfuscator.Test.SingleClassInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.MultipleInterfacesInheritance\bin\Debug\Obfuscator.Test.MultipleInterfacesInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\ThirdParty\Cecil 1\bin\winphone_Release\Mono.Cecil.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.MultiLevelClassInheritance\bin\Debug\Obfuscator.Test.MultiLevelClassInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\Obfuscator.Utils\bin\Debug\Obfuscator.Utils.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2011-09-01T22:34:35.6212161+02:00" queuing="2011-09-01T22:34:39.0067414+02:00" start="2011-09-01T22:34:39.3699605+02:00" finish="2011-09-01T22:34:40.9611633+02:00" />
+  <ResultSummary outcome="Error">
+    <Counters total="6" executed="1" error="0" failed="0" timeout="0" aborted="1" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="5" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+    <RunInfos>
+      <RunInfo computerName="CADLA-PC" outcome="Error" timestamp="2011-09-01T22:34:40.9455632+02:00">
+        <Text>Test host process exited unexpectedly.</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="TestWholeAlphabet" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="7ba2fb4c-9417-0f4c-e9db-b1b64b6f66be">
+      <Execution id="481f22d5-8a7e-440f-9877-28989e389b2c" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.NameGeneratorTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestWholeAlphabet" />
+    </UnitTest>
+    <UnitTest name="TestVirtualMethods" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="b60a90d4-0706-bcd6-cb6d-6600570b7d9b">
+      <Execution id="5a9e841b-a2e1-482d-a2e9-59442f0e0fca" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.SingleClassInheritanceTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestVirtualMethods" />
+    </UnitTest>
+    <UnitTest name="TestInstanceMethods" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="37c3c1b6-1cb1-c91d-c7d3-ed98a4234554">
+      <Execution id="791e64a2-2aec-4332-9e64-e7b3e3179d53" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.SingleClassInheritanceTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestInstanceMethods" />
+    </UnitTest>
+    <UnitTest name="TestGeneratorFailure" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="d73fbcfc-2958-fef3-b6e0-b67d467fd759">
+      <Execution id="973cd0e3-9f49-4d35-b107-e6f29f435e39" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.NameGeneratorTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestGeneratorFailure" />
+    </UnitTest>
+    <UnitTest name="TestMethod1" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="0cf8622a-91ad-9de2-adbb-62672938fed5">
+      <Execution id="44462af0-9240-4540-ae0e-df9055cf31bd" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.NoInheritanceTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestMethod1" />
+    </UnitTest>
+    <UnitTest name="TestNewGenerator" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6">
+      <Execution id="cad0460d-0a61-462e-9c5c-b3cd1b00d5ed" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.NameGeneratorTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestNewGenerator" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="0cf8622a-91ad-9de2-adbb-62672938fed5" executionId="44462af0-9240-4540-ae0e-df9055cf31bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="37c3c1b6-1cb1-c91d-c7d3-ed98a4234554" executionId="791e64a2-2aec-4332-9e64-e7b3e3179d53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6" executionId="cad0460d-0a61-462e-9c5c-b3cd1b00d5ed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7ba2fb4c-9417-0f4c-e9db-b1b64b6f66be" executionId="481f22d5-8a7e-440f-9877-28989e389b2c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b60a90d4-0706-bcd6-cb6d-6600570b7d9b" executionId="5a9e841b-a2e1-482d-a2e9-59442f0e0fca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d73fbcfc-2958-fef3-b6e0-b67d467fd759" executionId="973cd0e3-9f49-4d35-b107-e6f29f435e39" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="44462af0-9240-4540-ae0e-df9055cf31bd" testId="0cf8622a-91ad-9de2-adbb-62672938fed5" testName="TestMethod1" computerName="CADLA-PC" duration="00:00:01.2480022" startTime="2011-09-01T22:34:39.6975610+02:00" endTime="2011-09-01T22:34:40.9455632+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Aborted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="44462af0-9240-4540-ae0e-df9055cf31bd">
+    </UnitTestResult>
+    <UnitTestResult executionId="791e64a2-2aec-4332-9e64-e7b3e3179d53" testId="37c3c1b6-1cb1-c91d-c7d3-ed98a4234554" testName="TestInstanceMethods" computerName="CADLA-PC" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="791e64a2-2aec-4332-9e64-e7b3e3179d53">
+    </UnitTestResult>
+    <UnitTestResult executionId="cad0460d-0a61-462e-9c5c-b3cd1b00d5ed" testId="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6" testName="TestNewGenerator" computerName="CADLA-PC" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cad0460d-0a61-462e-9c5c-b3cd1b00d5ed">
+    </UnitTestResult>
+    <UnitTestResult executionId="481f22d5-8a7e-440f-9877-28989e389b2c" testId="7ba2fb4c-9417-0f4c-e9db-b1b64b6f66be" testName="TestWholeAlphabet" computerName="CADLA-PC" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="481f22d5-8a7e-440f-9877-28989e389b2c">
+    </UnitTestResult>
+    <UnitTestResult executionId="5a9e841b-a2e1-482d-a2e9-59442f0e0fca" testId="b60a90d4-0706-bcd6-cb6d-6600570b7d9b" testName="TestVirtualMethods" computerName="CADLA-PC" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5a9e841b-a2e1-482d-a2e9-59442f0e0fca">
+    </UnitTestResult>
+    <UnitTestResult executionId="973cd0e3-9f49-4d35-b107-e6f29f435e39" testId="d73fbcfc-2958-fef3-b6e0-b67d467fd759" testName="TestGeneratorFailure" computerName="CADLA-PC" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="973cd0e3-9f49-4d35-b107-e6f29f435e39">
+    </UnitTestResult>
+  </Results>
+</TestRun>

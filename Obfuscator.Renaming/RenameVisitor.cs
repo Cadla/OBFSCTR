@@ -7,11 +7,12 @@ namespace Obfuscator.Renaming
 {
     public partial class RenameVisitor : NullAssemblyVisitor
     {
-        IDictionary<string, string> _renameMap = new Dictionary<string, string>();
+        public IDictionary<string, string> _renameMap = new Dictionary<string, string>();
 
         // TODO read: http://www.unicode.org/unicode/reports/tr15/tr15-18.htm to get allowed characters
         NameGenerator _nameGenerator = new NameGenerator("ABCDEFGHIJKLMNOPRSTUWXYZ");
-        
+        public ScopeSth _scope;
+
         const string SKIPPING_IGNORED = "IS IGNORRED";
         const string SKIPPING_CONSTRUCTOR = "IS A CONSTRUCTOR"; // TODO isn't constructor a special name
         const string SKIPPING_SPECIAL_NAME = "IS A SPECIAL NAME";
@@ -25,6 +26,12 @@ namespace Obfuscator.Renaming
 
         partial void logVisitingMember(IMemberDefinition member);
         partial void logSkipingMember(IMemberDefinition member, string message);
+
+
+        public RenameVisitor()            
+        {
+            _scope = new ScopeSth(_nameGenerator);
+        }
 
         public void PringMap()
         {
@@ -81,17 +88,12 @@ namespace Obfuscator.Renaming
 
         private void Rename(IMemberDefinition member)
         {
-            string oldName = member.FullName;
-            string scope = Helper.GetScope(member);
-
-            string newName = _nameGenerator.GetName(scope);
+            string oldName = member.FullName;            
+            string newName = _scope.GetName(member);
 
             TypeDefinition type = member as TypeDefinition;
             if (type != null)
             {
-                while (type.IsNested && newName == type.DeclaringType.Name)
-                    newName = _nameGenerator.GetName(scope);
-
                 member.Name = newName;
 
                 // Renaming namespace                                            
@@ -99,7 +101,7 @@ namespace Obfuscator.Renaming
             }
             else
             {
-                member.Name = newName;
+                member.Name = newName;                
             }
 
             // validates uniqueness
@@ -128,7 +130,7 @@ namespace Obfuscator.Renaming
                 logSkipingMember(method, SKIPPING_RUNTIME);
                 return false;
             }
-            if (IsExternalVirtual(method))
+            if (IsVirtualImplementation(method))
             {
                 logSkipingMember(method, SKIPPING_EXTERNAL_VIRTUAL);
             }
@@ -136,10 +138,12 @@ namespace Obfuscator.Renaming
             return true;
         }
 
-        private bool IsExternalVirtual(MethodDefinition method)
+        private bool IsVirtualImplementation(MethodDefinition method)
         {
+ 
+           // TODO sprawdz czy nalezy dodac cos do .override
            // if(method.)
-            return true;
+            return false;
         }
 
         private bool ShouldBeRenamed(TypeDefinition type)
@@ -157,6 +161,12 @@ namespace Obfuscator.Renaming
         {
             if (IsIgnored(field))
                 return false;
+
+            if (field.IsSpecialName)
+            {
+                logSkipingMember(field, SKIPPING_SPECIAL_NAME);
+                return false;
+            }
 
    
             return true;
@@ -177,6 +187,14 @@ namespace Obfuscator.Renaming
 
  
             return true;
+        }
+
+
+        private bool IsIgnored(MethodDefinition member)
+        {
+            if (member.Name == "Main")
+                return true;
+            return false;
         }
 
         private bool IsIgnored(IMemberDefinition member)

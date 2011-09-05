@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="ea260452-ddc3-4eec-ba0b-ba1008917cdc" name="Cadla@CADLA-PC 2011-09-01 22:29:24" runUser="Cadla-PC\Cadla" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Default Test Settings" id="71e9b06b-775e-4865-b512-81ba96a061ab">
+    <Deployment runDeploymentRoot="Cadla_CADLA-PC 2011-09-01 22_29_24">
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\Obfuscator.Renaming\bin\Debug\Obfuscator.Renaming.exe" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.Inheritance\bin\Debug\Obfuscator.Test.SingleClassInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.MultipleInterfacesInheritance\bin\Debug\Obfuscator.Test.MultipleInterfacesInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\ThirdParty\Cecil 1\bin\winphone_Release\Mono.Cecil.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\TestLibraries\Obfuscator.Test.MultiLevelClassInheritance\bin\Debug\Obfuscator.Test.MultiLevelClassInheritance.dll" />
+      <DeploymentItem filename="D:\Magisterka-nowy\Obfuscator\Obfuscator.Utils\bin\Debug\Obfuscator.Utils.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2011-09-01T22:29:24.7034736+02:00" queuing="2011-09-01T22:29:28.2134798+02:00" start="2011-09-01T22:29:28.4786802+02:00" finish="2011-09-01T22:29:29.7578825+02:00" />
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" error="0" failed="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="TestNewGenerator" storage="d:\magisterka-nowy\obfuscator\obfuscator.renaming.test\bin\debug\obfuscator.renaming.test.dll" id="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6">
+      <Execution id="d616704c-87e5-4fc5-a92f-b0869f029724" />
+      <TestMethod codeBase="D:/Magisterka-nowy/Obfuscator/Obfuscator.Renaming.Test/bin/Debug/Obfuscator.Renaming.Test.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Obfuscator.Renaming.Test.NameGeneratorTest, Obfuscator.Renaming.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestNewGenerator" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6" executionId="d616704c-87e5-4fc5-a92f-b0869f029724" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="d616704c-87e5-4fc5-a92f-b0869f029724" testId="4f3b2b57-cc8c-8214-348b-8d0e9e3ea6a6" testName="TestNewGenerator" computerName="CADLA-PC" duration="00:00:00.0702679" startTime="2011-09-01T22:29:28.5566804+02:00" endTime="2011-09-01T22:29:29.6954824+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d616704c-87e5-4fc5-a92f-b0869f029724">
+    </UnitTestResult>
+  </Results>
+</TestRun>

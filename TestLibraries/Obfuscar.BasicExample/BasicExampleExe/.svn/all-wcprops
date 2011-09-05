@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe
+END
+ExampleUI.resx
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe/ExampleUI.resx
+END
+Program.cs
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe/Program.cs
+END
+ExampleUI.Designer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe/ExampleUI.Designer.cs
+END
+ExampleUI.cs
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe/ExampleUI.cs
+END
+BasicExampleExe.csproj
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleExe/BasicExampleExe.csproj
+END

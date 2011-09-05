@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleLibrary
+END
+BasicExampleLibrary.csproj
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleLibrary/BasicExampleLibrary.csproj
+END
+ClassX.cs
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleLibrary/ClassX.cs
+END
+TestClasses.cs
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleLibrary/TestClasses.cs
+END
+NonInternalOverride.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/3/trunk/Examples/BasicExample/BasicExampleLibrary/NonInternalOverride.cs
+END

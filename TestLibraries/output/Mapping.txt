@@ -1,0 +1,37 @@
+Renamed Types:
+
+[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConflictBase -> [Obfuscator.Test.Scope]A.A
+{
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConflictBase::A[0]( ) -> A
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConflictBase::AMethod[0]( ) -> a
+
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConflictBase::.ctor[0]( ) skipped:  special name
+
+	System.String [Obfuscator.Test.Scope]System.String Obfuscator.Test.Scope.NameConflictBase::C -> A
+}
+
+[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConfictChild -> [Obfuscator.Test.Scope]A.a
+{
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConfictChild::B[0]( ) -> A
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConfictChild::BMethod[0]( ) -> a
+
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.NameConfictChild::.ctor[0]( ) skipped:  special name
+
+	System.String [Obfuscator.Test.Scope]System.String Obfuscator.Test.Scope.NameConfictChild::A -> A
+	System.String [Obfuscator.Test.Scope]System.String Obfuscator.Test.Scope.NameConfictChild::C -> a
+}
+
+[Obfuscator.Test.Scope]Obfuscator.Test.Scope.Program -> [Obfuscator.Test.Scope]A.B
+{
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.Program::Main[1]( System.String[] ) -> A
+
+	[Obfuscator.Test.Scope]Obfuscator.Test.Scope.Program::.ctor[0]( ) skipped:  special name
+}
+
+Skipped Types:
+
+Renamed Resources:
+
+
+Skipped Resources:
+

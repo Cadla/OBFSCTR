@@ -9,7 +9,7 @@ namespace Obfuscator.Renaming.Test
     [TestClass]
     public class SingleClassInheritanceTest
     {
-        private TypeMap _assemblyMap;
+        private TypeTree _assemblyMap;
 
         private const string NAMESPACE = "Obfuscator.Test";
 
@@ -36,7 +36,7 @@ namespace Obfuscator.Renaming.Test
                 assembly2
             };
 
-            _assemblyMap = new TypeMap(assemblies);
+            _assemblyMap = new TypeTree(assemblies);
         }
 
 

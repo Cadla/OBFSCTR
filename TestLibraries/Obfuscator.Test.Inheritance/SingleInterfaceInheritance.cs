@@ -20,7 +20,9 @@ namespace Obfuscator.Test
     public class SingleInterfaceInheritanceExplicit : ISingleInterfaceInheritance
     {
         // Is not a virtual method
-        public virtual void InterfaceMethod() { }                           // .method public hidebysig instance 
+        public void InterfaceMethod() { }                           // .method public hidebysig instance 
+
+       //  private override sealed void InterfaceMethod() { }                           // has to be public
         // Explicit interface implementation
         void ISingleInterfaceInheritance.InterfaceMethod() { }      // .method private hidebysig newslot virtual final instance 
                                                                     // override Obfuscator.Test.ISingleInterfaceInheritance::InterfaceMethod

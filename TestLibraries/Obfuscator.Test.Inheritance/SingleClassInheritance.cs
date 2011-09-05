@@ -7,6 +7,8 @@ namespace Obfuscator.Test
 {
     public class SingleClassInheritanceBaseClass
     {
+        public void AMethod() { }
+
         public static void StaticMethod() { }
 
         public void ImplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
@@ -21,9 +23,16 @@ namespace Obfuscator.Test
         public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
 
         public virtual void SealedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
+
+        public virtual void SkippedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
+        
+        public virtual void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    public class SingleClassInheritanceClass : SingleClassInheritanceBaseClass
+    public class SingleClassInheritanceClass : SingleClassInheritanceBaseClass, IDisposable
     {
         // Implicitly hides static method with the same signature from the base class
         public void StaticMethod() { }
@@ -45,21 +54,74 @@ namespace Obfuscator.Test
         public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
 
         public sealed override void SealedVirtualMethod() { }                   // .method public hidebysig virtual final instance
+
+        public void Dispose()
+        {
+
+        }
+    }
+
+
+    public class SingleClassInheritanceChildChild : SingleClassInheritanceClass
+    {
+        public override void ExplicitOverrideVirtualMethod()
+        {
+            base.ExplicitOverrideVirtualMethod();
+        }
+
+        public override void SkippedVirtualMethod()
+        {
+            base.SkippedVirtualMethod();
+        }
+
+        public override void NewSlotVirtualMethod()
+        {
+            base.NewSlotVirtualMethod();
+        }
+
+        public override void VirtualVirtualMethod()
+        {
+            base.VirtualVirtualMethod();
+        }
+
+        public void Dispose()
+        {
+
+        }
+        // a class can override only from a base class
+        //public override void SkippedVirtualMethod()
+        //{
+        //}
     }
     
     public abstract class SingleAbstractClassInheritanceBaseClass
     {
-        // public abstract void ImplicitNewAbstractMethod();
-        // public abstract void ExplicitNewAbstractMethod();
+        public abstract void ImplicitNewAbstractMethod();
+        public abstract void ExplicitNewAbstractMethod();
         public abstract void ExplicitOverrideAbstractMethod();                  // .method public hidebysig newslot abstract virtual instance 
         public abstract void SealedVirtualMethod();                             // .method public hidebysig newslot abstract virtual instance 
     }
 
-    public class SingleAbstractClassInheritanceClass : SingleAbstractClassInheritanceBaseClass
+    public abstract class SingleAbstractClassInheritanceClass : SingleAbstractClassInheritanceBaseClass
     {
         // public void ImplicitNewAbstractMethod() { } // Not abstract class have to implement all of the abstract methods explicitly
-        // public new void ExplicitNewAbstractMethod() { } // New method         
+        // public new void ExplicitNewAbstractMethod() { } // New method   
+        public abstract override void ExplicitNewAbstractMethod();
         public override void ExplicitOverrideAbstractMethod() { }               // .method public hidebysig virtual instance 
         public sealed override void SealedVirtualMethod() { }                   // .method public hidebysig virtual final instance      
     }
+
+    public class SingleAbstractClassInteritanceChildChild : SingleAbstractClassInheritanceClass
+    {
+        public override void ImplicitNewAbstractMethod()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ExplicitNewAbstractMethod()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
+
