@@ -7,87 +7,98 @@ namespace Obfuscator.Test
 {
     public class SingleClassInheritanceBaseClass
     {
-        public void AMethod() { }
+        //public void AMethod() { }
 
-        public static void StaticMethod() { }
+        //public static void StaticMethod() { }
 
-        public void ImplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
-        public void ExplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
-        // public void ExplicitOverrideInstanceMethod() { }
+        public virtual void GenericMethod<A>() { }
+        public virtual void GenericMethod<A, B>() { }
+        public virtual void GenericMethod<A, B, C>() { }
 
-        public virtual void ImplicitNewVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
-        public virtual void ExplicitNewVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
-        public virtual void ExplicitOverrideVirtualMethod() { }                 // .method public hidebysig newslot virtual instance              
+        //public void ImplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
+        //public void ExplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
+        //// public void ExplicitOverrideInstanceMethod() { }
 
-        public virtual void NewSlotVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
-        public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
+        //public virtual void ImplicitNewVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
+        //public virtual void ExplicitNewVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
+        //public virtual void ExplicitOverrideVirtualMethod() { }                 // .method public hidebysig newslot virtual instance              
 
-        public virtual void SealedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
+        //public virtual void NewSlotVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
+        //public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
 
-        public virtual void SkippedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
+        //public virtual void SealedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
+
+        //public virtual void SkippedVirtualMethod() { }                           // .method public hidebysig newslot virtual instance 
         
-        public virtual void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        //public virtual void Dispose()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 
-    public class SingleClassInheritanceClass : SingleClassInheritanceBaseClass, IDisposable
+    public class SingleClassInheritanceClass : SingleClassInheritanceBaseClass
     {
-        // Implicitly hides static method with the same signature from the base class
-        public void StaticMethod() { }
-        public static void StaticMethod(string str) { }
-        public void StaticMethod(int x) { }
+        //// Implicitly hides static method with the same signature from the base class
+        //public void StaticMethod() { }
+        //public static void StaticMethod(string str) { }
+        //public void StaticMethod(int x) { }
 
-        // Implicitly hides base class member of the same name (as if it was preceeded with 'new' keyword
-        public void ImplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
-        public new void ExplicitNewInstanceMethod() { }                         // .method public hidebysig instance 
-        // Only abstract, virtual and override methods can be overriden
-        // public override void ExplicitOverrideInstanceMethod() { }  
+        public void GenericMethod<A>() {}
+        public virtual void GenericMethod<A, B>() { }
+        public override void GenericMethod<A, B, C>() { }
 
-        // Implicitly hides base class member of the same name (as if it was preceeded with 'new' keyword        
-        public void ImplicitNewVirtualMethod() { }                              // .method public hidebysig instance 
-        public new void ExplicitNewVirtualMethod() { }                          // .method public hidebysig instance 
-        public override void ExplicitOverrideVirtualMethod() { }                // .method public hidebysig virtual instance 
+        //// Implicitly hides base class member of the same name (as if it was preceeded with 'new' keyword
+        //public void ImplicitNewInstanceMethod() { }                             // .method public hidebysig instance 
+        //public new void ExplicitNewInstanceMethod() { }                         // .method public hidebysig instance 
+        //// Only abstract, virtual and override methods can be overriden
+        //// public override void ExplicitOverrideInstanceMethod() { }  
 
-        public new virtual void NewSlotVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
-        public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
+        //// Implicitly hides base class member of the same name (as if it was preceeded with 'new' keyword        
+        //public void ImplicitNewVirtualMethod() { }                              // .method public hidebysig instance 
+        //public new void ExplicitNewVirtualMethod() { }                          // .method public hidebysig instance 
+        //public override void ExplicitOverrideVirtualMethod() { }                // .method public hidebysig virtual instance 
 
-        public sealed override void SealedVirtualMethod() { }                   // .method public hidebysig virtual final instance
+        //public new virtual void NewSlotVirtualMethod() { }                      // .method public hidebysig newslot virtual instance 
+        //public virtual void VirtualVirtualMethod() { }                          // .method public hidebysig newslot virtual instance              
 
-        public void Dispose()
-        {
+        //public sealed override void SealedVirtualMethod() { }                   // .method public hidebysig virtual final instance
 
-        }
+        //public void Dispose()
+        //{
+
+        //}
     }
 
 
     public class SingleClassInheritanceChildChild : SingleClassInheritanceClass
     {
-        public override void ExplicitOverrideVirtualMethod()
-        {
-            base.ExplicitOverrideVirtualMethod();
-        }
+        public virtual void GenericMethod<A>() { }
+        public override sealed void GenericMethod<A, C>() { }
 
-        public override void SkippedVirtualMethod()
-        {
-            base.SkippedVirtualMethod();
-        }
+        //public override void ExplicitOverrideVirtualMethod()
+        //{
+        //    base.ExplicitOverrideVirtualMethod();
+        //}
 
-        public override void NewSlotVirtualMethod()
-        {
-            base.NewSlotVirtualMethod();
-        }
+        //public override void SkippedVirtualMethod()
+        //{
+        //    base.SkippedVirtualMethod();
+        //}
 
-        public override void VirtualVirtualMethod()
-        {
-            base.VirtualVirtualMethod();
-        }
+        //public override void NewSlotVirtualMethod()
+        //{
+        //    base.NewSlotVirtualMethod();
+        //}
 
-        public void Dispose()
-        {
+        //public override void VirtualVirtualMethod()
+        //{
+        //    base.VirtualVirtualMethod();
+        //}
 
-        }
+        //public void Dispose()
+        //{
+
+        //}
         // a class can override only from a base class
         //public override void SkippedVirtualMethod()
         //{

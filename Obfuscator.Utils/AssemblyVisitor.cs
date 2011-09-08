@@ -14,12 +14,9 @@ namespace Obfuscator.Utils
 
         private delegate void VisitElement<T>(T element);
 
-        public bool ParseMethods { get; set; }
-
         // TODO parseMethods doesn't make sense in this place. should be defined somewhere in the implementation of IAssemblyVisitor interface
-        public AssemblyVisitor(bool parseMethods = true)
+        public AssemblyVisitor()
         {
-            ParseMethods = parseMethods;
         }
 
         public void ConductVisit(AssemblyDefinition assembly, IAssemblyVisitor visitor)
@@ -46,7 +43,7 @@ namespace Obfuscator.Utils
         private void VisitModuleDefinition(ModuleDefinition module)
         {
             //if (CheckVisited(module))
-            //    return;
+            //    return;            
 
             visitor_.VisitModuleDefinition(module);
 
@@ -57,11 +54,11 @@ namespace Obfuscator.Utils
             // TODO check what .GetMemberReferences do. Maybe it doesn't make sense to go through all 
             // instructions and parse them as it may happpend that all references an assembly have are already accessible through this method
 
-            VisitCollection(module.Resources, VisitResource, () => module.HasResources);
-
             // TODO what about Symbols (.HasSymbols .ReadSymbols())
 
             VisitCollection(module.Types, VisitTypeDefinition, () => module.HasTypes);
+
+            VisitCollection(module.Resources, VisitResource, () => module.HasResources);
         }
 
         private void VisitTypeDefinition(TypeDefinition type)
@@ -99,10 +96,11 @@ namespace Obfuscator.Utils
             VisitCollection(type.Methods, VisitMethodDefinition, () => type.HasMethods);
         }
 
-
-
         private void VisitTypeReference(TypeReference type)
         {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
             if (type == null)
                 return;
 
@@ -134,6 +132,9 @@ namespace Obfuscator.Utils
 
         private void VisitFieldReference(FieldReference field)
         {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
             if (CheckVisited(field))
                 return;
 
@@ -171,7 +172,6 @@ namespace Obfuscator.Utils
         {
             //if (CheckVisited(@event))
             //    return;
-
             visitor_.VisitEventDefinition(@event);
 
             // TODO is there a way to get here not from declaring type of this field?
@@ -183,7 +183,7 @@ namespace Obfuscator.Utils
 
             VisitMethodDefinition(@event.AddMethod);
 
-            VisitMethodDefinition(@event.RemoveMethod);           
+            VisitMethodDefinition(@event.RemoveMethod);
 
             // NOTE seems like raise method for and event can be overrided in c++, http://msdn.microsoft.com/en-us/library/5f3csfsa.aspx
             VisitMethodDefinition(@event.InvokeMethod);
@@ -221,16 +221,21 @@ namespace Obfuscator.Utils
 
             VisitCollection(method.SecurityDeclarations, VisitSecurityDeclaration, () => method.HasSecurityDeclarations);
 
-            if (ParseMethods && method.HasBody)
+            if (method.HasBody)
                 VisitMethodBody(method.Body);
         }
 
         private void VisitMethodBody(MethodBody body)
         {
+            if (visitor_.Level() != VisitorLevel.MethodBodys)
+                return;
+
             VisitCollection(body.Variables, VisitVariable, () => body.HasVariables);
 
             foreach (var instruction in body.Instructions)
             {
+                VisitInstruction(instruction);
+
                 object operand = instruction.Operand;
 
                 if (operand is FieldReference)
@@ -252,6 +257,10 @@ namespace Obfuscator.Utils
                     VisitTypeReference(handler.CatchType);
         }
 
+        private void VisitInstruction(Instruction instruction)
+        {
+            visitor_.VisitInstruction(instruction);
+        }
 
         private void VisitVariable(VariableDefinition variable)
         {
@@ -259,7 +268,7 @@ namespace Obfuscator.Utils
             //if (CheckVisited(variable))
             //    return;
 
-            //visitor_.VisitVariableDefinition(variable);
+            visitor_.VisitVariableDefinition(variable);
 
             //VisitCollection(body.Variables, VisitVariable, () => b.HasVariables);
 
@@ -270,6 +279,9 @@ namespace Obfuscator.Utils
 
         private void VisitMethodReturnType(MethodReturnType returnType)
         {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
             visitor_.VisitMethodReturnType(returnType);
 
             VisitCollection(returnType.CustomAttributes, VisitCustomAttribute, () => returnType.HasCustomAttributes);
@@ -277,6 +289,9 @@ namespace Obfuscator.Utils
 
         private void VisitMethodReference(MethodReference method)
         {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
             if (CheckVisited(method))
                 return;
 
@@ -310,6 +325,9 @@ namespace Obfuscator.Utils
 
         private void VisitAssemblyReference(AssemblyNameReference reference)
         {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
             if (CheckVisited(reference))
                 return;
 

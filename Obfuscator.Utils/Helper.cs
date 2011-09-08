@@ -46,6 +46,13 @@ namespace Obfuscator.Utils
             return GetNestedType(declaring_type, type.Name);
         }
 
+        public static TypeDefinition GetBaseTypeDefinition(TypeDefinition type)
+        {
+            if (type != null && type.BaseType != null)
+                return type.BaseType.Resolve();
+            return null;
+        }
+
         public static TypeDefinition GetNestedType(TypeDefinition type, string name)
         {
             if (!type.HasNestedTypes)
@@ -159,17 +166,8 @@ namespace Obfuscator.Utils
             if (!AreSame(a.ReturnType, b.ReturnType))
                 return false;
 
-            if (a.HasParameters != b.HasParameters)
-                return false;
-
-            if (!a.HasParameters && !b.HasParameters)
-                return true;
-
             if (!AreSame(a.Parameters, b.Parameters))
                 return false;
-
-            if (!a.HasGenericParameters && !b.HasGenericParameters)
-                return true;
 
             if (a.GenericParameters.Count != b.GenericParameters.Count)
                 return false;
@@ -229,38 +227,15 @@ namespace Obfuscator.Utils
 
         public static bool AreSame(Collection<ParameterDefinition> a, Collection<ParameterDefinition> b)
         {
-            var count = a.Count;
-
-            if (count != b.Count)
+            if (a.Count != b.Count)
                 return false;
-
-            if (count == 0)
-                return true;
-
-            // TODO order doesn't count
-            for (int i = 0; i < count; i++)
+            
+            for (int i = 0; i < a.Count; i++)
                 if (!AreSame(a[i].ParameterType, b[i].ParameterType))
                     return false;
 
             return true;
         }
-
-        //public static bool AreSame(Collection<GenericParameter> a, Collection<GenericParameter> b)
-        //{
-        //    var count = a.Count;
-
-        //    if(count != b.Count)
-        //        return false;
-
-        //    if(count == 0)
-        //        return true;
-
-        //    for(int i = 0; i < count; i++)
-        //        if(!AreSame(a[i],b[i]))
-        //            return false;
-
-        //    return true;
-        //}
 
         public static bool AreSame(AssemblyNameReference a, AssemblyNameReference b)
         {
@@ -344,6 +319,29 @@ namespace Obfuscator.Utils
             return false;
         }
 
+        public static bool IsOverrideCompliant(MethodDefinition @base, MethodDefinition implementation)
+        {
+            //if (!implementation.IsVirtual || implementation.IsNewSlot)
+            //    return false;
+
+            //if (!@base.IsVirtual || @base.IsFinal)
+            //    return false;
+
+            if (@base.Name != implementation.Name)
+                return false;
+
+            if (!AreSame(@base.ReturnType, implementation.ReturnType))
+                return false;
+
+            if (!AreSame(@base.Parameters, implementation.Parameters))
+                return false;
+
+            if (@base.GenericParameters.Count != implementation.GenericParameters.Count)
+                return false;
+
+            return true;
+        }
+
         public static Instruction CreateInstruction(OpCode opCode, OperandType operandType, object operand)
         {
             if (opCode.Code == Code.Calli)
@@ -395,7 +393,37 @@ namespace Obfuscator.Utils
             return null;
         }
 
-     
+        public static bool IsExplicitImplementation(MethodDefinition interfaceMethod, MethodDefinition implementation)
+        {
+            foreach (var @override in implementation.Overrides)
+                if (Helper.AreSame(interfaceMethod, @override))
+                    return true;
+            return false;
+        }
+
+        public static bool IsImplicitImplementation(MethodDefinition interfaceMethod, MethodDefinition implementation)
+        {
+            return implementation.IsPublic && Helper.IsOverrideCompliant(interfaceMethod, implementation);
+        }
+
+        // Gathers methods from all interfaces, and the intefraces that the type's interfaces are inheriting from
+        // Not need to check type.BaseType intefraces as they have to be by definition implemented in the base type
+        // If the current type implements any of the baseType.Interfraces methods, it's done by normal polimorphism mechanism        
+        // NOTE interface hierarchy is flat! Interfaces collection contains both directly and indirectly implemented interfaces
+        public static List<MethodDefinition> GetInterfaceMethods(TypeDefinition type)
+        {
+            var interfaceMethods = new List<MethodDefinition>();
+            foreach (TypeDefinition @interface in type.Interfaces)
+            {
+                foreach (var method in @interface.Methods)
+                {
+                    //if (!result.Any(m => HaveSameSignature(m, method)))
+                    // Include all methods, even the hidden ones
+                    interfaceMethods.Add(method);
+                }
+            }
+            return interfaceMethods;
+        }
         //public static string GetMethodSignatureString(MethodReference method)
         //{
         //    StringBuilder signature = new StringBuilder();

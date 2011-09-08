@@ -1,9 +1,20 @@
 ﻿using Mono.Cecil;
+using Mono.Cecil.Cil;
+using System;
 
 namespace Obfuscator.Utils
-{
+{    
+    public enum VisitorLevel
+    {
+        Definitions,
+        References,
+        MethodBodys        
+    }
+
     public interface IAssemblyVisitor
     {
+        VisitorLevel Level();
+
         void VisitAssemblyDefinition(AssemblyDefinition assembly);
 
         void VisitModuleDefinition(ModuleDefinition module);
@@ -13,6 +24,7 @@ namespace Obfuscator.Utils
         void VisitEventDefinition(EventDefinition @event);
         void VisitPropertyDefinition(PropertyDefinition property);
         void VisitParameterDefinition(ParameterDefinition parameter);
+        void VisitVariableDefinition(VariableDefinition variable);
 
         void VisitModuleReference(ModuleReference module);
         void VisitTypeReference(TypeReference type);
@@ -25,6 +37,7 @@ namespace Obfuscator.Utils
         void VisitAssemblyReference(AssemblyNameReference reference);
 
         void VisitMethodReturnType(MethodReturnType returnType);
+        void VisitInstruction(Instruction instruction);
         void VisitGenericParameter(GenericParameter genericParameter);
         void VisitCustomAttribute(CustomAttribute attribute);
         void VisitSecurityDeclaration(SecurityDeclaration securityDeclaration);
@@ -32,3 +45,4 @@ namespace Obfuscator.Utils
         void VisitResource(Resource resource);        
     }
 }
+

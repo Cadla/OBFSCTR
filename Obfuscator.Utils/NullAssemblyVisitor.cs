@@ -3,6 +3,11 @@ namespace Obfuscator.Utils
 {
     public class NullAssemblyVisitor : IAssemblyVisitor
     {
+        public virtual VisitorLevel Level()
+        {
+            return VisitorLevel.MethodBodys;
+        }
+
         public virtual void VisitAssemblyDefinition(Mono.Cecil.AssemblyDefinition assembly)
         {
 
@@ -39,6 +44,11 @@ namespace Obfuscator.Utils
         }
 
         public virtual void VisitParameterDefinition(Mono.Cecil.ParameterDefinition parameter)
+        {
+
+        }
+        
+        public virtual void VisitVariableDefinition(Mono.Cecil.Cil.VariableDefinition variable)
         {
 
         }
@@ -86,6 +96,11 @@ namespace Obfuscator.Utils
         public virtual void VisitMethodReturnType(Mono.Cecil.MethodReturnType returnType)
         {
 
+        }
+
+        public virtual void VisitInstruction(Mono.Cecil.Cil.Instruction instruction)
+        {
+            
         }
 
         public virtual void VisitGenericParameter(Mono.Cecil.GenericParameter genericParameter)

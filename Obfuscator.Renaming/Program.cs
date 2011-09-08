@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using Obfuscator.Utils;
 using CommandLine;
 using System.IO;
+using Obfuscator.Renaming.Visitors;
+using Obfuscator.Renaming.Steps;
 
 namespace Obfuscator.Renaming
 {
@@ -34,8 +36,6 @@ namespace Obfuscator.Renaming
                 {
                     resolver.RemoveSearchDirectory(dir);
                 }
-                resolver.AddSearchDirectory(TEST_LIBRARIES);
-                resolver.AddSearchDirectory(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client");
 
                 var parameters = new ReaderParameters()
                 {
@@ -43,34 +43,35 @@ namespace Obfuscator.Renaming
                     ReadSymbols = true
                 };
 
-                AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(TEST_LIBRARIES + options.AssemblyName, parameters); 
-                //AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(TEST_LIBRARIES + options.AssemblyName);
+                Pipeline p = GetStandardPipeline();                
+                ObfuscationContext context = new ObfuscationContext(p, resolver);
 
-                RenameVisitor testVisitor = new RenameVisitor();
-                OverridesResolver.Visitor overridesVisitor = new OverridesResolver.Visitor();
+                context.OutputDirectory = OUTPUT;
 
-                AssemblyVisitor visitor = new AssemblyVisitor(true);
+                context.Resolver.AddSearchDirectory(TEST_LIBRARIES);
+                context.Resolver.AddSearchDirectory(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client");
 
-                visitor.ConductVisit(assembly, overridesVisitor);
+                context.Resolve(TEST_LIBRARIES + options.AssemblyName);
+                context.Resolve(TEST_LIBRARIES + "ConsoleApplication1.exe");                
 
-                overridesVisitor.printDictionary();                
-
-                visitor.ConductVisit(assembly, testVisitor);                
-
-                FixVirtualMethodsNaminVisitor fixVisitor = new FixVirtualMethodsNaminVisitor(testVisitor._scope, testVisitor._renameMap);
-
-                visitor.ConductVisit(assembly, fixVisitor);
-
-                testVisitor.PringMap();
-
-                assembly.Name.Version = new System.Version(666, 666);
-                assembly.Name.Name = assembly.Name.Name+"_modified";
-                var stream = new FileStream(OUTPUT + assembly.Name.Name + (assembly.MainModule.Kind == ModuleKind.Dll ? ".dll" : ".exe"), FileMode.Create);
-                
-                assembly.Write(stream, new WriterParameters() { WriteSymbols = true });
+                p.Process(context);              
 
                 System.Console.ReadKey();
             }
         }
+
+        static Pipeline GetStandardPipeline()
+        {
+            Pipeline p = new Pipeline();
+            p.AppendStep(new FillOverrideTables());
+            p.AppendStep(new BuildRenameMapStep());
+       //     p.AppendStep(new FixVirtualMethodsNames());
+            p.AppendStep(new FixReferencesStep());
+            p.AppendStep(new RenameStep());
+            p.AppendStep(new OutputStep());
+            return p;
+        }
     }
 }
+
+

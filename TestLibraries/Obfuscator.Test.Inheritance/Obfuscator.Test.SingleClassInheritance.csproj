@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassesAndInterfaces.cs" />
     <Compile Include="SingleClassInheritance.cs" />
     <Compile Include="SingleInterfaceInheritance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -47,7 +48,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)TestLibraries\bin" /Y
-xcopy "$(TargetDir)*.dll" "$(SolutionDir)TestLibraries\bin" /Y</PostBuildEvent>
+xcopy "$(TargetDir)*.dll" "$(SolutionDir)TestLibraries\bin" /Y
+xcopy "$(TargetDir)*.pdb" "$(SolutionDir)TestLibraries\bin" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

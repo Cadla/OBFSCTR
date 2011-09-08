@@ -16,10 +16,14 @@ namespace Obfuscator.Test.Scope
         public string D = "BaseD";
 
         public string AMethod() { return "AMethod"; }
+
+        public virtual void method(int x, double y) { }
+        
     }
 
     public class NameConfictChild : NameConflictBase
     {
+   
         public string A = "ChildA";
 
         public string C = "ChildC";
@@ -46,4 +50,5 @@ namespace Obfuscator.Test.Scope
     //    public void D () { }
     //}
 }
+
 

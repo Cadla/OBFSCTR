@@ -6,20 +6,19 @@ namespace Obfuscator.Renaming
 {
     public interface INameGenerator
     {
+        string GetStartingString();
         string GetNext(string last);
     }
-
+    
     public class NameGenerator : INameGenerator
     {
         private string _alphabet;
         private StringBuilder builder = new StringBuilder();
 
-
         public NameGenerator(string alphabet)
         {
             _alphabet = alphabet;            
         }
-
 
         public string GetNext(string last)
         {
@@ -41,6 +40,11 @@ namespace Obfuscator.Renaming
             }
             builder.Insert(0, _alphabet[0]);
             return builder.ToString();
+        }
+
+        public string GetStartingString()
+        {
+            return "A";
         }
     }
 }
