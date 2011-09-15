@@ -107,6 +107,12 @@ namespace Obfuscator.Utils
             if (CheckVisited(type))
                 return;
 
+            if (type.IsGenericParameter)
+            {
+                VisitGenericParameter(type as GenericParameter);
+                return;
+            }
+
             visitor_.VisitTypeReference(type);
 
             VisitCollection(type.GenericParameters, VisitGenericParameter, () => type.HasGenericParameters);
@@ -230,11 +236,13 @@ namespace Obfuscator.Utils
             if (visitor_.Level() != VisitorLevel.MethodBodys)
                 return;
 
+            visitor_.VisitMethodBody(body);
+
             VisitCollection(body.Variables, VisitVariable, () => body.HasVariables);
 
             foreach (var instruction in body.Instructions)
             {
-                VisitInstruction(instruction);
+                visitor_.VisitInstruction(instruction);
 
                 object operand = instruction.Operand;
 
@@ -255,11 +263,6 @@ namespace Obfuscator.Utils
             foreach (var handler in body.ExceptionHandlers)
                 if (handler.CatchType != null)
                     VisitTypeReference(handler.CatchType);
-        }
-
-        private void VisitInstruction(Instruction instruction)
-        {
-            visitor_.VisitInstruction(instruction);
         }
 
         private void VisitVariable(VariableDefinition variable)

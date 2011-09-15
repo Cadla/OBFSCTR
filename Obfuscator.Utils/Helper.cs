@@ -33,6 +33,16 @@ namespace Obfuscator.Utils
             }
         }
 
+        public static AssemblyNameDefinition GetAssemblyName(IMemberDefinition definition)
+        {
+            if (definition.DeclaringType == null && definition is TypeDefinition)
+            {
+                var typeDefinition = definition as TypeDefinition;
+                return typeDefinition.Module.Assembly.Name;
+            }
+            return definition.DeclaringType.Module.Assembly.Name;
+        }
+
         //TODO Methods below can be changed to generic probably with use of Linq
         public static TypeDefinition GetType(ModuleDefinition module, TypeReference type)
         {
@@ -80,6 +90,19 @@ namespace Obfuscator.Utils
                 return type;
             }
             return null;
+        }
+
+        public static bool TryGetField(IList<FieldDefinition> fields, FieldDefinition field, ref FieldDefinition result)
+        {
+            foreach (var f in fields)
+            {
+                if (AreSame(field, f))
+                {
+                    result = f;
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static FieldDefinition GetField(IList<FieldDefinition> fields, FieldReference reference)
@@ -242,6 +265,11 @@ namespace Obfuscator.Utils
             return a.FullName == b.FullName;
         }
 
+        private static bool AreSame(ModuleDefinition a, ModuleDefinition b)
+        {
+            return a.FullyQualifiedName == b.FullyQualifiedName;
+        }
+
         public static bool AreSame(TypeSpecification a, TypeSpecification b)
         {
             if (!AreSame(a.ElementType, b.ElementType))
@@ -321,12 +349,19 @@ namespace Obfuscator.Utils
 
         public static bool IsOverrideCompliant(MethodDefinition @base, MethodDefinition implementation)
         {
-            //if (!implementation.IsVirtual || implementation.IsNewSlot)
-            //    return false;
+            // must be virtual, cannot be an unmanaged method reached via PInvoke
+            if (!implementation.IsVirtual || implementation.RVA == 0)
+                return false;
 
-            //if (!@base.IsVirtual || @base.IsFinal)
-            //    return false;
+            if (@base.DeclaringType.IsSealed)
+                return false;
 
+            if (!@base.IsVirtual || @base.IsFinal)
+                return false;
+
+            if (@base.IsCheckAccessOnOverride && !ValidWideningOfAccess(implementation, @base))
+                return false;
+                
             if (@base.Name != implementation.Name)
                 return false;
 
@@ -340,6 +375,46 @@ namespace Obfuscator.Utils
                 return false;
 
             return true;
+        }
+
+        public static bool ValidWideningOfAccess(MethodDefinition implementation, MethodDefinition @base)
+        {
+            if(implementation.IsCompilerControlled)
+                return AreSame(implementation.Module, @base.Module);
+
+            if (@base.IsPublic)
+                return true;
+
+            if(@base.IsCompilerControlled)
+                return false;
+
+            if(implementation.IsPublic)
+                return false;
+
+            if(implementation.IsPrivate)
+                return true;
+
+            bool sameAssembly = AreSame(implementation.Module.Assembly.Name, @base.Module.Assembly.Name);
+            
+            if(@base.IsFamilyOrAssembly && implementation.IsAssembly)
+                return sameAssembly;
+
+            if (@base.IsFamilyOrAssembly)
+                return true;
+
+            if (@base.IsFamilyAndAssembly && implementation.IsFamilyAndAssembly)
+                return sameAssembly;
+
+            if (@base.IsFamily && (implementation.IsFamily || implementation.IsFamilyAndAssembly))
+                return true;
+
+            if (@base.IsFamily && implementation.IsFamilyOrAssembly)
+                return !sameAssembly;
+
+            if (@base.IsAssembly && (implementation.IsAssembly || implementation.IsFamilyAndAssembly))
+                return sameAssembly;
+
+            return false;
         }
 
         public static Instruction CreateInstruction(OpCode opCode, OperandType operandType, object operand)
@@ -413,9 +488,10 @@ namespace Obfuscator.Utils
         public static List<MethodDefinition> GetInterfaceMethods(TypeDefinition type)
         {
             var interfaceMethods = new List<MethodDefinition>();
-            foreach (TypeDefinition @interface in type.Interfaces)
+            foreach (var @interface in type.Interfaces)
             {
-                foreach (var method in @interface.Methods)
+                var definition = @interface.Resolve();
+                foreach (var method in definition.Methods)
                 {
                     //if (!result.Any(m => HaveSameSignature(m, method)))
                     // Include all methods, even the hidden ones
@@ -424,6 +500,7 @@ namespace Obfuscator.Utils
             }
             return interfaceMethods;
         }
+
         //public static string GetMethodSignatureString(MethodReference method)
         //{
         //    StringBuilder signature = new StringBuilder();

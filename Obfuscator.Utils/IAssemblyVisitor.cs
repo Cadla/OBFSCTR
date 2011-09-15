@@ -37,12 +37,15 @@ namespace Obfuscator.Utils
         void VisitAssemblyReference(AssemblyNameReference reference);
 
         void VisitMethodReturnType(MethodReturnType returnType);
+        void VisitMethodBody(MethodBody body);
         void VisitInstruction(Instruction instruction);
         void VisitGenericParameter(GenericParameter genericParameter);
         void VisitCustomAttribute(CustomAttribute attribute);
         void VisitSecurityDeclaration(SecurityDeclaration securityDeclaration);
 
-        void VisitResource(Resource resource);        
+        void VisitResource(Resource resource);
+
+        
     }
 }
 

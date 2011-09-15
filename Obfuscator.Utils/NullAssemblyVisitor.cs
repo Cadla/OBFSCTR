@@ -98,6 +98,11 @@ namespace Obfuscator.Utils
 
         }
 
+        public virtual void VisitMethodBody(Mono.Cecil.Cil.MethodBody body)
+        {
+
+        }
+
         public virtual void VisitInstruction(Mono.Cecil.Cil.Instruction instruction)
         {
             
