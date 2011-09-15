@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="JanuszLembicz.PW.DB" EntityNamespace="JanuszLembicz.PW.BO" ContextNamespace="JanuszLembicz.PW.DAO" Class="ORMDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="ConnectionString" ConnectionString="Data Source=CADLAPC;Initial Catalog=JanuszLembicz.PW.DB;Persist Security Info=True;User ID=PWDB_LOGIN" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.JLPWDB_PRODUCERS" Member="Producers">
+    <Type Name="Producer">
+      <Column Name="ID" Member="ProducerID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="NAME" Member="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="Producer_Product" Member="Products" ThisKey="ProducerID" OtherKey="ProducerID" Type="Product" />
+    </Type>
+  </Table>
+  <Table Name="dbo.JLPWDB_PRODUCTS" Member="Products">
+    <Type Name="Product">
+      <Column Name="ID" Member="ProductID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="PRODUCER_ID" Member="ProducerID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="NAME" Member="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="MEMORY_CAPACITY" Member="MemoryCapacity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="HAS_DISPLAY" Member="HasDisplay" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="INTERFACE" Member="IntInterface" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="WARRANTY" Member="Warranty" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Producer_Product" Member="Producer" ThisKey="ProducerID" OtherKey="ProducerID" Type="Producer" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

@@ -1,0 +1,117 @@
+Renamed Types:
+
+[BasicExampleExe]BasicExampleExe.ExampleUI -> [BasicExampleExe]A.A
+{
+	[BasicExampleExe]BasicExampleExe.ExampleUI::InitializeComponent[0]( ) -> A
+
+	[BasicExampleExe]BasicExampleExe.ExampleUI::.ctor[0]( ) skipped:  special name
+	[BasicExampleExe]BasicExampleExe.ExampleUI::Dispose[1]( System.Boolean ) skipped:  external base class or interface
+
+	System.ComponentModel.IContainer [BasicExampleExe]System.ComponentModel.IContainer BasicExampleExe.ExampleUI::components -> A
+	System.Windows.Forms.Label [BasicExampleExe]System.Windows.Forms.Label BasicExampleExe.ExampleUI::label1 -> A
+	System.Windows.Forms.Label [BasicExampleExe]System.Windows.Forms.Label BasicExampleExe.ExampleUI::displayText -> a
+}
+
+[BasicExampleExe]BasicExampleExe.Properties.Resources -> [BasicExampleExe]A.B
+{
+	[BasicExampleExe]BasicExampleExe.Properties.Resources::get_ResourceManager[0]( ) -> A
+	[BasicExampleExe]BasicExampleExe.Properties.Resources::get_Culture[0]( ) -> a
+	[BasicExampleExe]BasicExampleExe.Properties.Resources::set_Culture[1]( System.Globalization.CultureInfo ) -> A
+
+	[BasicExampleExe]BasicExampleExe.Properties.Resources::.ctor[0]( ) skipped:  special name
+
+	System.Resources.ResourceManager [BasicExampleExe]System.Resources.ResourceManager BasicExampleExe.Properties.Resources::resourceMan -> A
+	System.Globalization.CultureInfo [BasicExampleExe]System.Globalization.CultureInfo BasicExampleExe.Properties.Resources::resourceCulture -> A
+
+	System.Resources.ResourceManager [BasicExampleExe]System.Resources.ResourceManager BasicExampleExe.Properties.Resources::ResourceManager -> A
+	System.Globalization.CultureInfo [BasicExampleExe]System.Globalization.CultureInfo BasicExampleExe.Properties.Resources::Culture -> a
+}
+
+[BasicExampleExe]BasicExampleExe.Properties.Settings -> [BasicExampleExe]A.b
+{
+	[BasicExampleExe]BasicExampleExe.Properties.Settings::get_Default[0]( ) -> A
+
+	[BasicExampleExe]BasicExampleExe.Properties.Settings::.ctor[0]( ) skipped:  special name
+	[BasicExampleExe]BasicExampleExe.Properties.Settings::.cctor[0]( ) skipped:  special name
+
+	BasicExampleExe.Properties.Settings [BasicExampleExe]BasicExampleExe.Properties.Settings BasicExampleExe.Properties.Settings::defaultInstance -> A
+
+	BasicExampleExe.Properties.Settings [BasicExampleExe]BasicExampleExe.Properties.Settings BasicExampleExe.Properties.Settings::Default -> dropped
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.ClassX -> [BasicExampleLibrary]A.A
+{
+	[BasicExampleLibrary]BasicExampleLibrary.ClassX::get_DisplayText[0]( ) -> A
+
+	[BasicExampleLibrary]BasicExampleLibrary.ClassX::.ctor[1]( System.String ) skipped:  special name
+
+	System.String [BasicExampleLibrary]System.String BasicExampleLibrary.ClassX::displayText -> A
+
+	System.String [BasicExampleLibrary]System.String BasicExampleLibrary.ClassX::DisplayText -> dropped
+}
+
+[BasicExampleExe]BasicExampleExe.Program -> [BasicExampleExe]A.a
+{
+	[BasicExampleExe]BasicExampleExe.Program::Main[0]( ) -> A
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideBase -> [BasicExampleLibrary]A.a
+{
+	[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideBase::Dispose[1]( System.Boolean ) -> A
+
+	[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideBase::Dispose[0]( ) skipped:  external base class or interface
+	[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideBase::.ctor[0]( ) skipped:  special name
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideDerived -> [BasicExampleLibrary]A.B
+{
+	[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideDerived::Dispose[1]( System.Boolean ) -> A
+
+	[BasicExampleLibrary]BasicExampleLibrary.NonInternalOverrideDerived::.ctor[0]( ) skipped:  special name
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.Interface1 -> [BasicExampleLibrary]A.b
+{
+	[BasicExampleLibrary]BasicExampleLibrary.Interface1::MethodA[1]( System.Int32 ) -> A
+	[BasicExampleLibrary]BasicExampleLibrary.Interface1::MethodB[1]( System.Int32 ) -> a
+	[BasicExampleLibrary]BasicExampleLibrary.Interface1::Method1[1]( System.Int32 ) -> B
+	[BasicExampleLibrary]BasicExampleLibrary.Interface1::Method2[1]( System.Int32 ) -> b
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.Base1 -> [BasicExampleLibrary]A.c
+{
+	[BasicExampleLibrary]BasicExampleLibrary.Base1::MethodA[1]( System.Int32 ) -> A
+	[BasicExampleLibrary]BasicExampleLibrary.Base1::MethodB[1]( System.Int32 ) -> a
+	[BasicExampleLibrary]BasicExampleLibrary.Base1::Method1[1]( System.Int32 ) -> B
+	[BasicExampleLibrary]BasicExampleLibrary.Base1::Method2[1]( System.Int32 ) -> b
+
+	[BasicExampleLibrary]BasicExampleLibrary.Base1::.ctor[0]( ) skipped:  special name
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1 -> [BasicExampleLibrary]A.C
+{
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1::MethodA[1]( System.Int32 ) -> A
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1::MethodB[1]( System.Int32 ) -> a
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1::Method1[1]( System.Int32 ) -> B
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1::Method2[1]( System.Int32 ) -> b
+
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride1::.ctor[0]( ) skipped:  special name
+}
+
+[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride2 -> [BasicExampleLibrary]A.D
+{
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride2::Method1[1]( System.Int32 ) -> B
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride2::MethodX[1]( System.Int32 ) -> C
+
+	[BasicExampleLibrary]BasicExampleLibrary.InterfaceOverride2::.ctor[0]( ) skipped:  special name
+}
+
+Skipped Types:
+
+Renamed Resources:
+
+BasicExampleExe.ExampleUI.resources -> A.A.resources
+BasicExampleExe.Properties.Resources.resources -> A.B.resources
+
+Skipped Resources:
+
