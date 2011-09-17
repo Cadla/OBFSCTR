@@ -17,6 +17,7 @@ namespace Obfuscator.Steps.Renaming
             {
                 dynamic dynamicReference = reference.Key;
                 IMemberDefinition definition = dynamicReference.Resolve();
+                //TODO: what if cannot resolve? 
                 var assemblyName = Helper.GetAssemblyName(definition);
 
                 if (Context.DefinitionsRenameMap.ContainsKey(assemblyName)) // renaming was done in this assembly

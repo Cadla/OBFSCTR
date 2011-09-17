@@ -30,7 +30,8 @@ namespace Obfuscator.Configuration
         }
 
         protected abstract bool IsEntryPoint(Member member);
-        protected abstract bool ShouldPreserveStrings(Method method);
+        protected abstract bool InvokesByName(Method method, out int paramIndex);
+        //protected abstract bool ShouldPreserveStrings(Method method);
         protected abstract bool ShouldKeepNamespacess(Assembly assembly);
 
         protected abstract IEnumerable<Assembly> GetAssemblies();        
@@ -43,6 +44,16 @@ namespace Obfuscator.Configuration
         internal IEnumerable<AssemblyDefinition> GetAssemblyDefinitions()
         {
             return GetAssemblies().Select(a => a.AssemblyDefinition);
+        }
+
+        bool IFilter.InvokesByName(MethodReference method, out int paramIndex)
+        {
+            return InvokesByName(new Method(method), out paramIndex);
+        }
+
+        bool IFilter.ShouldKeepNamespaces(AssemblyDefinition assembly)
+        {
+            return ShouldKeepNamespacess(new Assembly(assembly));
         }
 
         bool IFilter.ShouldSkip(IMemberDefinition member)

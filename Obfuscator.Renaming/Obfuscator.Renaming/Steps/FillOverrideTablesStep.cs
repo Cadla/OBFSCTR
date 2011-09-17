@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 using Obfuscator.Utils;
 
 namespace Obfuscator.Steps.Renaming
@@ -33,7 +34,9 @@ namespace Obfuscator.Steps.Renaming
                 var implementation = key.Key;
                 foreach (var method in key.Value)
                 {
-                    implementation.Overrides.Add(method);
+                    var reference = method.Module.Import(method);
+                    if(!implementation.Overrides.Contains(reference))
+                        implementation.Overrides.Add(reference);
                 }
             }
         }
@@ -41,29 +44,36 @@ namespace Obfuscator.Steps.Renaming
         private void FindImplementationsOfInterfaceMethods(TypeDefinition type)
         {
             foreach (var method in Helper.GetInterfaceMethods(type))
-            {
-                bool test = false;
-                var currentType = type;
-                do
+            {                
+                if(type.Methods.Any(m => Helper.IsExplicitImplementation(method, m)))
+                    continue;
+                // does not need to ad method to overrides since it's already there
+                
+                var implementation = type.Methods.SingleOrDefault(m => Helper.IsImplicitImplementation(method, m));                
+                if (implementation != null)
                 {
-                    MethodDefinition implementation = currentType.Methods.SingleOrDefault(m => Helper.IsExplicitImplementation(method, m));
-                    // does not need to ad method to overrides since it's already there
-                    if (implementation != null)
-                    {
-                        test = true;
-                        break;
-                    }
-                    implementation = currentType.Methods.SingleOrDefault(m => Helper.IsImplicitImplementation(method, m));
-                    if (implementation != null)
-                    {
-                        AddOverride(method, implementation);
-                        test = true;
-                        break;
-                    }
-                    currentType = Helper.GetBaseTypeDefinition(currentType);
-                } while (currentType != null);
-                Debug.Assert(test);
+                    AddOverride(method, implementation);
+                    continue;
+                }
+
+                //TODO: Create copy of the method above, without the method body, in the method body just call
+                // the base method and add interface method to overrides
+                //MethodDefinition customMethod = CreateExplicitInterfaceImplementation(type, method);
+                //customMethod.
+                var @base = Helper.GetBaseMethod(method, type);
+                Debug.Assert(@base != null);
             }
+        }
+
+        private MethodDefinition CreateExplicitInterfaceImplementation(TypeDefinition declaringType, MethodDefinition method)
+        {                        
+            var attributes = MethodAttributes.Private | MethodAttributes.Final |
+                MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.NewSlot;
+            var returnType = declaringType.Module.Import(method.ReturnType);
+
+            MethodDefinition result = new MethodDefinition(method.Name, attributes, returnType);
+            declaringType.Methods.Add(result);
+            return result;
         }
 
         private void FindImplementationsOfBaseMethods(TypeDefinition type)
@@ -72,35 +82,23 @@ namespace Obfuscator.Steps.Renaming
                 return;
 
             foreach (var method in type.Methods)
-            {
-                if (method.IsVirtual && !method.IsNewSlot)
-                {
-                    var baseType = Helper.GetBaseTypeDefinition(type);            
-                    while (baseType != null)
-                    {
-                        var origin = baseType.Methods.SingleOrDefault(m => Helper.IsOverrideCompliant(m, method));
-                        if (origin != null)
-                        {
-                            AddOverride(origin, method);
-                            break;
-                        }
-                        baseType = Helper.GetBaseTypeDefinition(baseType);
-                    }
-                }
-               
+            {                
+                var @base = Helper.GetBaseMethod(method);
+                if(@base != method)
+                    AddOverride(@base, method);               
             }
         }
 
-        private void AddOverride(MethodDefinition origin, MethodDefinition implementation)
+        private void AddOverride(MethodDefinition @base, MethodDefinition implementation)
         {
-            MethodReference originReference = origin;
-            if (origin.Module != implementation.Module)
-                originReference = implementation.Module.Import(origin);
+            MethodReference baseReference = @base;
+            if (@base.Module != implementation.Module)
+                baseReference = implementation.Module.Import(@base);
 
             if (_methodOverrides.ContainsKey(implementation))
-                _methodOverrides[implementation].Add(originReference);
+                _methodOverrides[implementation].Add(baseReference);
             else
-                _methodOverrides.Add(implementation, new List<MethodReference>() { originReference });
+                _methodOverrides.Add(implementation, new List<MethodReference>() { baseReference });
         }
     }
 }

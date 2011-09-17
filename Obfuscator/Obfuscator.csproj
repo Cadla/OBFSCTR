@@ -53,6 +53,10 @@
       <Project>{F2BF29A6-49B2-422A-9005-638E61F0AA97}</Project>
       <Name>Obfuscator.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Obfuscator.Reflection\Obfuscator.Reflection\Obfuscator.Reflection.csproj">
+      <Project>{03C12128-D664-4C2C-B6C0-91AA4629BEB3}</Project>
+      <Name>Obfuscator.Reflection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Obfuscator.Renaming\Obfuscator.Renaming\Obfuscator.Renaming.csproj">
       <Project>{CB8EE040-0CCE-4863-84C8-FBF63170CAD8}</Project>
       <Name>Obfuscator.Renaming</Name>

@@ -60,5 +60,10 @@ namespace Obfuscator.Configuration.COM
             return ((Member)obj)._memberDefinition.Equals(this._memberDefinition);
         }
 
+        public override int GetHashCode()
+        {
+            return _memberDefinition.GetHashCode();
+        }
+
     }
 }

@@ -20,14 +20,22 @@ namespace Obfuscator.Steps.Renaming
         }
 
         protected override void  ProcessAssembly(AssemblyDefinition assembly)
-        { 	      
-            Renamer renamer = new Renamer(new NameGenerator(ALPHABET), Context.Options);
+        {
+            Renamer renamer = new Renamer(new NameGenerator(ALPHABET), GetOptionsForAssembly(assembly));
             RenameMapVisitor renameMapVisitor = new RenameMapVisitor(renamer, Context.InputConfiguration);
             _visitor.ConductVisit(assembly, renameMapVisitor);
 
             Context.DefinitionsRenameMap[assembly.Name] = renamer.DefinitionsMap;
             Context.ResourcesRenameMap[assembly.Name] = renamer.ResourcesNames;
             Context.ReferencesRenameMap[assembly.Name] = renamer.References;
+        }
+
+        private ObfuscationOptions GetOptionsForAssembly(AssemblyDefinition assembly)
+        {
+            var options = Context.Options;
+            if (((IFilter)Context.InputConfiguration).ShouldKeepNamespaces(assembly))
+                options |= ObfuscationOptions.KeepNamespaces;
+            return options;
         }
     }
 }

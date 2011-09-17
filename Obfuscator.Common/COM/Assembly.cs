@@ -28,7 +28,12 @@ namespace Obfuscator.Configuration.COM
             get
             {
                 return _assemblyDefinition.Name.Name;
-            }
+            }     
         }
+
+        public override string ToString()
+        {
+            return _assemblyDefinition.ToString();
+        } 
     }
 }

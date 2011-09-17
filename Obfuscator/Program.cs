@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CommandLine;
-using Mono.Cecil;
+﻿using CommandLine;
 using Obfuscator.Configuration;
-using Obfuscator.Utils;
-using Obfuscator.Steps.Renaming;
 using Obfuscator.Steps;
+using Obfuscator.Steps.Reflection;
+using Obfuscator.Steps.Renaming;
 
 namespace Obfuscator
 {
@@ -59,6 +55,7 @@ namespace Obfuscator
             p.AppendStep(new BuildRenameMapStep());
        //     p.AppendStep(new FixVirtualMethodsNames());
             p.AppendStep(new FixReferencesStep());
+            p.AppendStep(new ReplaceMemberNameStringsStep());
             p.AppendStep(new RenameStep());
             p.AppendStep(new OutputStep());
             return p;

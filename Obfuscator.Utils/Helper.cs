@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Mono.Cecil;
@@ -80,18 +81,32 @@ namespace Obfuscator.Utils
             return null;
         }
 
-        public static TypeReference GetType(IList<TypeReference> types, TypeReference reference)
+        public static bool TryGetType(IList<TypeDefinition> types, TypeDefinition definition, ref TypeDefinition result)
         {
             foreach (var type in types)
             {
-                if (!AreSame(type, reference))
-                    continue;
-
-                return type;
+                if (AreSame(type, definition))
+                {
+                    result = type;
+                    return true;
+                }
             }
-            return null;
+            return false;
         }
 
+        public static bool TryGetTypeReference(IList<TypeReference> types, TypeReference typeReference, ref TypeReference result)
+        {
+            foreach (var type in types)
+            {
+                if (AreSame(type, typeReference))
+                {
+                    result = type;
+                    return true;
+                }
+            }
+            return false;
+
+        }
         public static bool TryGetField(IList<FieldDefinition> fields, FieldDefinition field, ref FieldDefinition result)
         {
             foreach (var f in fields)
@@ -105,53 +120,46 @@ namespace Obfuscator.Utils
             return false;
         }
 
-        public static FieldDefinition GetField(IList<FieldDefinition> fields, FieldReference reference)
-        {
-            foreach (var field in fields)
-            {
-                if (!AreSame(field, reference))
-                    continue;
-
-                return field;
-            }
-            return null;
-        }
-
-        public static MethodDefinition GetMethod(IList<MethodDefinition> methods, MethodReference reference)
+        public static bool TryGetMethod(IList<MethodDefinition> methods, MethodDefinition reference, ref MethodDefinition result)
         {
             foreach (var method in methods)
             {
-                if (!AreSame(method, reference))
-                    continue;
-
-                return method;
+                if (AreSame(method, reference))
+                {
+                    result = method;
+                    return true;
+                }
             }
-            return null;
+            return false;
         }
 
-        public static PropertyDefinition GetProperty(IList<PropertyDefinition> properties, PropertyReference reference)
+        public static bool TryGetProperty(IList<PropertyDefinition> properties, PropertyDefinition reference, ref PropertyDefinition result)
         {
             foreach (var property in properties)
             {
-                if (!AreSame(property, reference))
-                    continue;
-
-                return property;
+                if (AreSame(property, reference))
+                {
+                    result = property;
+                    return true;
+                }
             }
-            return null;
+            return false;
         }
 
-        public static EventDefinition GetEvent(IList<EventDefinition> events, EventReference reference)
+        public static bool TryGetEvent(IList<EventDefinition> events, EventDefinition reference, ref EventDefinition result)
         {
-            foreach (var evnt in events)
+            foreach (var @event in events)
             {
-                if (!AreSame(evnt, reference))
-                    continue;
-
-                return evnt;
+                if (AreSame(@event, reference))
+                {
+                    result = @event;
+                    return true;
+                }
             }
-            return null;
+            return false;
         }
+
+
 
         public static CustomAttribute GetCustomAttribute(IList<CustomAttribute> attributes, CustomAttribute reference)
         {
@@ -252,7 +260,7 @@ namespace Obfuscator.Utils
         {
             if (a.Count != b.Count)
                 return false;
-            
+
             for (int i = 0; i < a.Count; i++)
                 if (!AreSame(a[i].ParameterType, b[i].ParameterType))
                     return false;
@@ -265,7 +273,7 @@ namespace Obfuscator.Utils
             return a.FullName == b.FullName;
         }
 
-        private static bool AreSame(ModuleDefinition a, ModuleDefinition b)
+        public static bool AreSame(ModuleDefinition a, ModuleDefinition b)
         {
             return a.FullyQualifiedName == b.FullyQualifiedName;
         }
@@ -361,7 +369,7 @@ namespace Obfuscator.Utils
 
             if (@base.IsCheckAccessOnOverride && !ValidWideningOfAccess(implementation, @base))
                 return false;
-                
+
             if (@base.Name != implementation.Name)
                 return false;
 
@@ -379,24 +387,24 @@ namespace Obfuscator.Utils
 
         public static bool ValidWideningOfAccess(MethodDefinition implementation, MethodDefinition @base)
         {
-            if(implementation.IsCompilerControlled)
+            if (implementation.IsCompilerControlled)
                 return AreSame(implementation.Module, @base.Module);
 
             if (@base.IsPublic)
                 return true;
 
-            if(@base.IsCompilerControlled)
+            if (@base.IsCompilerControlled)
                 return false;
 
-            if(implementation.IsPublic)
+            if (implementation.IsPublic)
                 return false;
 
-            if(implementation.IsPrivate)
+            if (implementation.IsPrivate)
                 return true;
 
             bool sameAssembly = AreSame(implementation.Module.Assembly.Name, @base.Module.Assembly.Name);
-            
-            if(@base.IsFamilyOrAssembly && implementation.IsAssembly)
+
+            if (@base.IsFamilyOrAssembly && implementation.IsAssembly)
                 return sameAssembly;
 
             if (@base.IsFamilyOrAssembly)
@@ -481,6 +489,28 @@ namespace Obfuscator.Utils
             return implementation.IsPublic && Helper.IsOverrideCompliant(interfaceMethod, implementation);
         }
 
+
+        public static MethodDefinition GetBaseMethod(MethodDefinition method, TypeDefinition type)
+        {
+            if (method.IsVirtual && !method.IsNewSlot)
+            {
+                var baseType = Helper.GetBaseTypeDefinition(type);
+                while (baseType != null)
+                {
+                    var origin = baseType.Methods.SingleOrDefault(m => Helper.IsOverrideCompliant(m, method));
+                    if (origin != null)
+                        return origin;
+                    baseType = Helper.GetBaseTypeDefinition(baseType);
+                }
+            }
+            return method;
+        }
+
+        public static MethodDefinition GetBaseMethod(MethodDefinition method)
+        {
+            return GetBaseMethod(method, method.DeclaringType);
+        }
+
         // Gathers methods from all interfaces, and the intefraces that the type's interfaces are inheriting from
         // Not need to check type.BaseType intefraces as they have to be by definition implemented in the base type
         // If the current type implements any of the baseType.Interfraces methods, it's done by normal polimorphism mechanism        
@@ -511,6 +541,6 @@ namespace Obfuscator.Utils
 
 
 
-      
+
     }
 }

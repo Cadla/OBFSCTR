@@ -28,18 +28,18 @@ using System.Text;
 
 namespace BasicExampleLibrary
 {
-	public class ClassX
-	{
-		private readonly string displayText;
+    public class ClassX
+    {
+        private readonly string displayText;
 
-		public ClassX( string str )
-		{
-			displayText = "ClassX's String:  " + str;
-		}
+        public ClassX(string str)
+        {
+            displayText = "ClassX's String:  " + str;
+        }
 
-		public string DisplayText
-		{
-			get { return displayText; }
-		}
-	}
+        public string DisplayText
+        {
+            get { return displayText; }
+        }
+    }
 }

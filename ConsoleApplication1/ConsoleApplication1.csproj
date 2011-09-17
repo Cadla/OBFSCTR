@@ -2,18 +2,20 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{95DA839A-E705-4857-BA2B-0F4370C680E0}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>bcf93b2b-16b3-49fa-a9a4-94a7f0b49a7c</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Obfuscator.MetadataBuilder</RootNamespace>
-    <AssemblyName>Obfuscator.MetadataBuilder</AssemblyName>
+    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <AssemblyName>ConsoleApplication1</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,7 +24,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,30 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\GenericParameterExtensions.cs" />
-    <Compile Include="Extensions\IGenericParameterProviderExtensions.cs" />
-    <Compile Include="Extensions\ISecurityDeclarationProviderExtensions.cs" />
-    <Compile Include="Extensions\SecurityDeclarationExtensions.cs" />
-    <Compile Include="MetadataBuilderHelper.cs" />
-    <Compile Include="Extensions\ICustomAttributeProviderExtensions.cs" />
-    <Compile Include="Extensions\IMemberDefinitionExtensions.cs" />
-    <Compile Include="Extensions\ModuleDefinitionExtensions.cs" />
-    <Compile Include="Extensions\TypeDefinitionExtensions.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ThirdParty\Cecil 1\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ThirdParty\Cecil 1\rocks\Mono.Cecil.Rocks.csproj">
-      <Project>{FBC6DD59-D09D-499C-B03C-99C1C78FF2AC}</Project>
-      <Name>Mono.Cecil.Rocks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Obfuscator.Utils\Obfuscator.Utils.csproj">
-      <Project>{E10298D8-872D-47EB-BEFC-9FD00E78A296}</Project>
-      <Name>Obfuscator.Utils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
