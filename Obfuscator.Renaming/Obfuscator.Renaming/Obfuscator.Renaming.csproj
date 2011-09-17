@@ -59,6 +59,10 @@
       <Project>{F2BF29A6-49B2-422A-9005-638E61F0AA97}</Project>
       <Name>Obfuscator.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Obfuscator.MetadataBuilder\Obfuscator.MetadataBuilder\Obfuscator.MetadataBuilder.csproj">
+      <Project>{95DA839A-E705-4857-BA2B-0F4370C680E0}</Project>
+      <Name>Obfuscator.MetadataBuilder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ThirdParty\Cecil 1\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>

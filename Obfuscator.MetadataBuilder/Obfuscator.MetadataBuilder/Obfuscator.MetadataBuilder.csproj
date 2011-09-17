@@ -46,7 +46,6 @@
     <Compile Include="Extensions\SecurityDeclarationExtensions.cs" />
     <Compile Include="MetadataBuilderHelper.cs" />
     <Compile Include="Extensions\ICustomAttributeProviderExtensions.cs" />
-    <Compile Include="Extensions\IMemberDefinitionExtensions.cs" />
     <Compile Include="Extensions\ModuleDefinitionExtensions.cs" />
     <Compile Include="Extensions\TypeDefinitionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

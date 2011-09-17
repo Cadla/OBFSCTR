@@ -355,6 +355,23 @@ namespace Obfuscator.Utils
             return false;
         }
 
+        public static bool HaveSameSignature(MethodDefinition a, MethodDefinition b)
+        {
+            if (a.Name != b.Name)
+                return false;
+
+            if (!AreSame(a.ReturnType, b.ReturnType))
+                return false;
+
+            if (!AreSame(a.Parameters, b.Parameters))
+                return false;
+
+            if (a.GenericParameters.Count != b.GenericParameters.Count)
+                return false;
+
+            return true;
+        }
+
         public static bool IsOverrideCompliant(MethodDefinition @base, MethodDefinition implementation)
         {
             // must be virtual, cannot be an unmanaged method reached via PInvoke
@@ -368,21 +385,9 @@ namespace Obfuscator.Utils
                 return false;
 
             if (@base.IsCheckAccessOnOverride && !ValidWideningOfAccess(implementation, @base))
-                return false;
-
-            if (@base.Name != implementation.Name)
-                return false;
-
-            if (!AreSame(@base.ReturnType, implementation.ReturnType))
-                return false;
-
-            if (!AreSame(@base.Parameters, implementation.Parameters))
-                return false;
-
-            if (@base.GenericParameters.Count != implementation.GenericParameters.Count)
-                return false;
-
-            return true;
+                return false;            
+            
+            return HaveSameSignature(@base, implementation);
         }
 
         public static bool ValidWideningOfAccess(MethodDefinition implementation, MethodDefinition @base)
@@ -492,14 +497,14 @@ namespace Obfuscator.Utils
 
         public static MethodDefinition GetBaseMethod(MethodDefinition method, TypeDefinition type)
         {
-            if (method.IsVirtual && !method.IsNewSlot)
+            if (method.IsVirtual)
             {
                 var baseType = Helper.GetBaseTypeDefinition(type);
                 while (baseType != null)
                 {
-                    var origin = baseType.Methods.SingleOrDefault(m => Helper.IsOverrideCompliant(m, method));
-                    if (origin != null)
-                        return origin;
+                    var @base = baseType.Methods.SingleOrDefault(m => Helper.HaveSameSignature(m, method));
+                    if (@base != null)
+                        return @base;
                     baseType = Helper.GetBaseTypeDefinition(baseType);
                 }
             }

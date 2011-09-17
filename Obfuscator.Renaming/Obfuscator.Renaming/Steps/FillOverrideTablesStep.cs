@@ -4,6 +4,8 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using Obfuscator.Utils;
+using Obfuscator.MetadataBuilder.Extensions;
+using Mono.Cecil.Cil;
 
 namespace Obfuscator.Steps.Renaming
 {
@@ -46,8 +48,9 @@ namespace Obfuscator.Steps.Renaming
             foreach (var method in Helper.GetInterfaceMethods(type))
             {                
                 if(type.Methods.Any(m => Helper.IsExplicitImplementation(method, m)))
+                    // does not need to ad method to overrides since it's already there
                     continue;
-                // does not need to ad method to overrides since it's already there
+                
                 
                 var implementation = type.Methods.SingleOrDefault(m => Helper.IsImplicitImplementation(method, m));                
                 if (implementation != null)
@@ -56,24 +59,60 @@ namespace Obfuscator.Steps.Renaming
                     continue;
                 }
 
-                //TODO: Create copy of the method above, without the method body, in the method body just call
-                // the base method and add interface method to overrides
-                //MethodDefinition customMethod = CreateExplicitInterfaceImplementation(type, method);
-                //customMethod.
-                var @base = Helper.GetBaseMethod(method, type);
-                Debug.Assert(@base != null);
+                var customMethod = CreateExplicitInterfaceImplementation(type, method);
+                AddOverride(method, customMethod);                
             }
         }
 
-        private MethodDefinition CreateExplicitInterfaceImplementation(TypeDefinition declaringType, MethodDefinition method)
-        {                        
-            var attributes = MethodAttributes.Private | MethodAttributes.Final |
-                MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.NewSlot;
-            var returnType = declaringType.Module.Import(method.ReturnType);
+        private static MethodDefinition CreateExplicitInterfaceImplementation(TypeDefinition type, MethodDefinition method)
+        {
+            var customMethod = type.InjectMethod(method, ReferenceResolver.GetDefaultResolver(type.Module), false);
+            
+            customMethod.Attributes = MethodAttributes.Private | MethodAttributes.Virtual | MethodAttributes.Final |
+                MethodAttributes.HideBySig | MethodAttributes.NewSlot;          
+                       
 
-            MethodDefinition result = new MethodDefinition(method.Name, attributes, returnType);
-            declaringType.Methods.Add(result);
-            return result;
+            var body = customMethod.Body = new MethodBody(customMethod);
+            body.InitLocals = true;
+            var returnType = type.Module.Import(method.ReturnType);
+            body.Variables.Add(new VariableDefinition(returnType));
+            var processor = customMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Nop);
+                        
+            for (byte i = 0; i < method.Parameters.Count + 1; ++i)
+            {
+                switch (i)
+                {
+                    case 0:
+                        processor.Emit(OpCodes.Ldarg_0);
+                        break;
+                    case 1:
+                        processor.Emit(OpCodes.Ldarg_1);
+                        break;
+                    case 2:
+                        processor.Emit(OpCodes.Ldarg_2);
+                        break;
+                    case 3:
+                        processor.Emit(OpCodes.Ldarg_3);
+                        break;
+                    default:
+                        processor.Emit(OpCodes.Ldarg_S, i);
+                        break;
+
+                }
+            }
+
+            var @base = Helper.GetBaseMethod(method, type);
+            
+            processor.Emit(OpCodes.Call, @base);
+            processor.Emit(OpCodes.Stloc_0);
+            var ldloc = processor.Create(OpCodes.Ldloc_0);
+            processor.Append(ldloc);
+            var brs = processor.Create(OpCodes.Br_S, ldloc);
+            processor.InsertBefore(ldloc, brs);
+            processor.Emit(OpCodes.Ret);
+
+            return customMethod;
         }
 
         private void FindImplementationsOfBaseMethods(TypeDefinition type)
@@ -82,7 +121,10 @@ namespace Obfuscator.Steps.Renaming
                 return;
 
             foreach (var method in type.Methods)
-            {                
+            {
+                if (!method.IsVirtual || method.IsNewSlot)
+                    continue;
+
                 var @base = Helper.GetBaseMethod(method);
                 if(@base != method)
                     AddOverride(@base, method);               

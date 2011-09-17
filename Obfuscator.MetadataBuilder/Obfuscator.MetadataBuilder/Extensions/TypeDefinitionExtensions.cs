@@ -162,7 +162,7 @@ namespace Obfuscator.MetadataBuilder.Extensions
             return newProperty;
         }
 
-        public static MethodDefinition InjectMethod(this TypeDefinition targetType, MethodDefinition sourceMethod, ReferenceResolver resolver)
+        public static MethodDefinition InjectMethod(this TypeDefinition targetType, MethodDefinition sourceMethod, ReferenceResolver resolver, bool body = true)
         {            
             if (sourceMethod == null)
                 throw new ArgumentNullException("sourceMethod");
@@ -198,7 +198,8 @@ namespace Obfuscator.MetadataBuilder.Extensions
 
             MetadataBuilderHelper.CopySecurityDeclarations(sourceMethod, newMethod, resolver);
 
-            CopyMethodBody(sourceMethod, newMethod, resolver);
+            if(body)
+                CopyMethodBody(sourceMethod, newMethod, resolver);
 
             //  Console.WriteLine("\tCreated method {0}", sourceMethod.FullName);
             return newMethod;

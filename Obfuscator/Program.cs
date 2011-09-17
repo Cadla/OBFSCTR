@@ -33,12 +33,13 @@ namespace Obfuscator
                 configuration.AddSearchDirectory(TEST_LIBRARIES);
                 configuration.AddSearchDirectory(NOT_NECESSARY);
 
+                
                 foreach (var assembly in options.AssemblyNames)
                 {
                     configuration.AddAssembly(assembly);
                 }
 
-                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.Default);
+                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance);
                 
                 context.OutputDirectory = OUTPUT;
                 

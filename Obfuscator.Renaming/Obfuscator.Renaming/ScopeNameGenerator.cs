@@ -41,9 +41,10 @@ namespace Obfuscator.Renaming
                 scopeId = GetCTSMemberScope(member);
                 newName = GetNextName(scopeId);
             }            
-            return newName;
+            return newName + x++;
         }
 
+        public int x = 0;
         public string GetTypeName(TypeDefinition type)
         {
             Debug.Assert(!type.IsNested);

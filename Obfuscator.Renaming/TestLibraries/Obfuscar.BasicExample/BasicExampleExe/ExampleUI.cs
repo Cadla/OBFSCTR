@@ -41,8 +41,10 @@ namespace BasicExampleExe
 			InitializeComponent( );
 
 			ClassX cx = new ClassX( "Some Text" );
+            Class c = new Class();
+            var x = ((IClass)c).MethodA(1, 1, typeof(Class), "fuck", 0.0, typeof(Base).GetMethod("MethodA"), StringComparer.Create(new System.Globalization.CultureInfo(1),false));
 
-			displayText.Text = cx.DisplayText;
+			displayText.Text = cx.DisplayText + " " + x;
 		}
 	}
 }
