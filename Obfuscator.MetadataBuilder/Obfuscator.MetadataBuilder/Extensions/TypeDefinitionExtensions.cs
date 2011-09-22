@@ -294,7 +294,7 @@ namespace Obfuscator.MetadataBuilder.Extensions
                 {
                     operand = instruction.Operand;
                 }
-
+                
                 Instruction newInstruction = Helper.CreateInstruction(instruction.OpCode, instruction.OpCode.OperandType, operand);
                 newInstruction.SequencePoint = instruction.SequencePoint;
 

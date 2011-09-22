@@ -4,18 +4,18 @@ using System.Text;
 
 namespace Obfuscator.Renaming
 {
-    public interface INameGenerator
+    public interface IStringGenerator
     {
         string GetStartingString();
         string GetNext(string last);
     }
     
-    public class NameGenerator : INameGenerator
+    public class StringGenerator : IStringGenerator
     {
         private string _alphabet;
         private StringBuilder builder = new StringBuilder();
 
-        public NameGenerator(string alphabet)
+        public StringGenerator(string alphabet)
         {
             _alphabet = alphabet;            
         }

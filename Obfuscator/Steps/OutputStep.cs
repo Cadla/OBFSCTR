@@ -71,16 +71,16 @@ namespace Obfuscator.Steps {
         {
             var parameters = new WriterParameters();
             //if (!Context.LinkSymbols)
-                return parameters;
-
-            //if (!assembly.MainModule.HasSymbols)
             //    return parameters;
+
+            if (!assembly.MainModule.HasSymbols)
+                return parameters;
 
             //if (Context.SymbolWriterProvider != null)
             //    parameters.SymbolWriterProvider = Context.SymbolWriterProvider;
             //else
-            //    parameters.WriteSymbols = true;
-            //return parameters;
+                parameters.WriteSymbols = true;
+            return parameters;
         }
 
         //static void CopyConfigFileIfNeeded (AssemblyDefinition assembly, string directory)

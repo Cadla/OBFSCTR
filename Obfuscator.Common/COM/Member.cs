@@ -51,8 +51,15 @@ namespace Obfuscator.Configuration.COM
         {
             get
             {
+                if (_memberDefinition.DeclaringType == null)
+                    return null;
                 return new COM.Type(_memberDefinition.DeclaringType);
             }
+        }
+
+        public override string ToString()
+        {
+            return _memberDefinition.ToString();
         }
 
         public override bool Equals(object obj)

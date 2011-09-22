@@ -12,7 +12,7 @@ namespace Obfuscator.Renaming
     // Make two renamers out of this
     public class Renamer
     {
-        ScopeNameGenerator _scopeNameGenerator;
+        INameGenerator _scopeNameGenerator;
         ObfuscationOptions _options;
 
         public Dictionary<IMemberDefinition, string> DefinitionsMap
@@ -35,11 +35,9 @@ namespace Obfuscator.Renaming
         }
 
       
-        public Renamer(INameGenerator nameGenerator, ObfuscationOptions options)
+        public Renamer(IStringGenerator nameGenerator, ObfuscationOptions options)
         {
-            _scopeNameGenerator = new ScopeNameGenerator(nameGenerator,
-                options.HasFlag(ObfuscationOptions.CLSCompliance),
-                options.HasFlag(ObfuscationOptions.KeepNamespaces));
+            _scopeNameGenerator = new CTSNameGenerator(nameGenerator, options.HasFlag(ObfuscationOptions.KeepNamespaces));
 
             _options = options;
 
@@ -83,15 +81,37 @@ namespace Obfuscator.Renaming
         public string MapResource(Resource resource)
         {
             string name = Path.GetFileNameWithoutExtension(resource.Name);
-            string newName;
-            if ((newName = GetMappedName(name)) != null)
+            IMemberDefinition member;
+            if ((member = GetMappedMember(name)) != null)
             {
                 string suffix = resource.Name.Substring(name.Length);
+                var newName = DefinitionsMap[member];
                 newName = newName + suffix;
-                ResourcesNames[resource] = newName;
+                if (_options.HasFlag(ObfuscationOptions.KeepNamespaces) && member.DeclaringType == null)
+                    newName = ((TypeDefinition)member).Namespace + '.' + newName;
+
+                ResourcesNames[resource] = newName ;
                 return newName;
             }
-            return name;
+            return resource.Name;
+        }
+
+        //TODO Same fully-qualified type names in two assemblies http://msdn.microsoft.com/en-us/library/ms173212.aspx
+        private string MapMemberDefinition(IMemberDefinition member)
+        {
+            string newName = _scopeNameGenerator.GetMemberName(member);
+            DefinitionsMap[member] = member.Name + newName;
+            return member.Name + newName;
+        }
+
+        private string MapTypeDefinition(TypeDefinition type)
+        {
+            if (type.IsNested)
+                return MapMemberDefinition(type);
+
+            string newName = _scopeNameGenerator.GetTypeName(type);
+            DefinitionsMap[type] = type.Name + newName;
+            return type.Name + newName;
         }
 
         public bool TryGetMappedName(IMemberDefinition member, out string name)
@@ -103,37 +123,13 @@ namespace Obfuscator.Renaming
         {
             return ResourcesNames.TryGetValue(resource, out name);
         }
-
    
-
-        //TODO Same fully-qualified type names in two assemblies http://msdn.microsoft.com/en-us/library/ms173212.aspx
-        private string MapMemberDefinition(IMemberDefinition member)
-        {
-            var declaringTypeName = member.DeclaringType.Name;
-            if (_options.HasFlag(ObfuscationOptions.CLSCompliance) && DefinitionsMap.ContainsKey(member.DeclaringType))
-                declaringTypeName = DefinitionsMap[member.DeclaringType];
-
-            string newName = _scopeNameGenerator.GetMemberName(member, declaringTypeName);
-            DefinitionsMap[member] = newName;
-            return newName;
-        }
-
-        private string MapTypeDefinition(TypeDefinition type)
-        {
-            if (type.IsNested)
-                return MapMemberDefinition(type);
-
-            string newName = _scopeNameGenerator.GetTypeName(type);
-            DefinitionsMap[type] = newName;
-            return newName;
-        }
-
-        private string GetMappedName(string memberName)
+        private IMemberDefinition GetMappedMember(string memberName)
         {
             IMemberDefinition member;
             if ((member = DefinitionsMap.Keys.SingleOrDefault(m => m.FullName == memberName)) != null)
             {
-                return DefinitionsMap[member];
+                return member;
             }
             return null;
         }

@@ -177,14 +177,22 @@ namespace Obfuscator.Utils
 
         public static bool AreSame(TypeReference a, TypeReference b)
         {
+            if (a.IsGenericParameter || b.IsGenericParameter)
+            {
+                return true;
+            }
+                //return AreSame((GenericParameter)a, (GenericParameter)b);
+
             if (a.MetadataType != b.MetadataType)
-                return false;
+               return false;
 
-            if (a.IsGenericParameter)
-                return AreSame((GenericParameter)a, (GenericParameter)b);
+            if (a is TypeSpecification || b is TypeSpecification)
+            {
+                if (a.GetType() != b.GetType())
+                    return false;
 
-            if (IsTypeSpecification(a))
                 return AreSame((TypeSpecification)a, (TypeSpecification)b);
+            }
 
             return a.FullName == b.FullName;
         }
@@ -280,9 +288,6 @@ namespace Obfuscator.Utils
 
         public static bool AreSame(TypeSpecification a, TypeSpecification b)
         {
-            if (!AreSame(a.ElementType, b.ElementType))
-                return false;
-
             if (a.IsGenericInstance)
                 return AreSame((GenericInstanceType)a, (GenericInstanceType)b);
 
@@ -292,7 +297,7 @@ namespace Obfuscator.Utils
             if (a.IsArray)
                 return AreSame((ArrayType)a, (ArrayType)b);
 
-            return true;
+            return AreSame(a.ElementType, b.ElementType);
         }
 
         public static bool AreSame(ArrayType a, ArrayType b)
@@ -307,15 +312,15 @@ namespace Obfuscator.Utils
 
         public static bool AreSame(IModifierType a, IModifierType b)
         {
-            return AreSame(a.ModifierType, b.ModifierType);
+            if (!AreSame(a.ModifierType, b.ModifierType))
+                return false;
+
+            return AreSame(a.ElementType, b.ElementType);
         }
 
         public static bool AreSame(GenericInstanceType a, GenericInstanceType b)
         {
-            if (!a.HasGenericArguments)
-                return !b.HasGenericArguments;
-
-            if (!b.HasGenericArguments)
+            if (!AreSame(a.ElementType, b.ElementType))
                 return false;
 
             if (a.GenericArguments.Count != b.GenericArguments.Count)
@@ -330,36 +335,17 @@ namespace Obfuscator.Utils
 
         public static bool AreSame(GenericParameter a, GenericParameter b)
         {
-            return a.Position == b.Position;
+            return true;
+            //return a.Position == b.Position;
         }
 
-        public static bool IsTypeSpecification(TypeReference type)
-        {
-            switch (type.MetadataType)
-            {
-                case MetadataType.Array:
-                case MetadataType.ByReference:
-                case MetadataType.OptionalModifier:
-                case MetadataType.RequiredModifier:
-                case MetadataType.FunctionPointer:
-                case MetadataType.GenericInstance:
-                case MetadataType.MVar:
-                case MetadataType.Pinned:
-                case MetadataType.Pointer:
-                //case ElementType.SzArray:
-                case MetadataType.Sentinel:
-                case MetadataType.Var:
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static bool HaveSameSignature(MethodDefinition a, MethodDefinition b)
+        public static bool HaveSameSignature(MethodReference a, MethodReference b)
         {
             if (a.Name != b.Name)
                 return false;
 
+            //if (a.CallingConvention != b.CallingConvention)
+            //    return false;
             if (!AreSame(a.ReturnType, b.ReturnType))
                 return false;
 
@@ -372,63 +358,63 @@ namespace Obfuscator.Utils
             return true;
         }
 
-        public static bool IsOverrideCompliant(MethodDefinition @base, MethodDefinition implementation)
-        {
-            // must be virtual, cannot be an unmanaged method reached via PInvoke
-            if (!implementation.IsVirtual || implementation.RVA == 0)
-                return false;
+        //public static bool IsOverrideCompliant(MethodDefinition @base, MethodDefinition implementation)
+        //{
+        //    // must be virtual, cannot be an unmanaged method reached via PInvoke
+        //    if (!implementation.IsVirtual)// || implementation.RVA == 0)
+        //        return false;
 
-            if (@base.DeclaringType.IsSealed)
-                return false;
+        //    if (@base.DeclaringType.IsSealed)
+        //        return false;
 
-            if (!@base.IsVirtual || @base.IsFinal)
-                return false;
+        //    if (!@base.IsVirtual || @base.IsFinal)
+        //        return false;
 
-            if (@base.IsCheckAccessOnOverride && !ValidWideningOfAccess(implementation, @base))
-                return false;            
+        //    if (@base.IsCheckAccessOnOverride && !ValidWideningOfAccess(implementation, @base))
+        //        return false;            
             
-            return HaveSameSignature(@base, implementation);
-        }
+        //    return HaveSameSignature(@base, implementation);
+        //}
 
-        public static bool ValidWideningOfAccess(MethodDefinition implementation, MethodDefinition @base)
-        {
-            if (implementation.IsCompilerControlled)
-                return AreSame(implementation.Module, @base.Module);
+        //public static bool ValidWideningOfAccess(MethodDefinition implementation, MethodDefinition @base)
+        //{
+        //    if (implementation.IsCompilerControlled)
+        //        return AreSame(implementation.Module, @base.Module);
 
-            if (@base.IsPublic)
-                return true;
+        //    if (@base.IsPublic)
+        //        return true;
 
-            if (@base.IsCompilerControlled)
-                return false;
+        //    if (@base.IsCompilerControlled)
+        //        return false;
 
-            if (implementation.IsPublic)
-                return false;
+        //    if (implementation.IsPublic)
+        //        return false;
 
-            if (implementation.IsPrivate)
-                return true;
+        //    if (implementation.IsPrivate)
+        //        return true;
 
-            bool sameAssembly = AreSame(implementation.Module.Assembly.Name, @base.Module.Assembly.Name);
+        //    bool sameAssembly = AreSame(implementation.Module.Assembly.Name, @base.Module.Assembly.Name);
 
-            if (@base.IsFamilyOrAssembly && implementation.IsAssembly)
-                return sameAssembly;
+        //    if (@base.IsFamilyOrAssembly && implementation.IsAssembly)
+        //        return sameAssembly;
 
-            if (@base.IsFamilyOrAssembly)
-                return true;
+        //    if (@base.IsFamilyOrAssembly)
+        //        return true;
 
-            if (@base.IsFamilyAndAssembly && implementation.IsFamilyAndAssembly)
-                return sameAssembly;
+        //    if (@base.IsFamilyAndAssembly && implementation.IsFamilyAndAssembly)
+        //        return sameAssembly;
 
-            if (@base.IsFamily && (implementation.IsFamily || implementation.IsFamilyAndAssembly))
-                return true;
+        //    if (@base.IsFamily && (implementation.IsFamily || implementation.IsFamilyAndAssembly))
+        //        return true;
 
-            if (@base.IsFamily && implementation.IsFamilyOrAssembly)
-                return !sameAssembly;
+        //    if (@base.IsFamily && implementation.IsFamilyOrAssembly)
+        //        return !sameAssembly;
 
-            if (@base.IsAssembly && (implementation.IsAssembly || implementation.IsFamilyAndAssembly))
-                return sameAssembly;
+        //    if (@base.IsAssembly && (implementation.IsAssembly || implementation.IsFamilyAndAssembly))
+        //        return sameAssembly;
 
-            return false;
-        }
+        //    return false;
+        //}
 
         public static Instruction CreateInstruction(OpCode opCode, OperandType operandType, object operand)
         {
@@ -481,61 +467,28 @@ namespace Obfuscator.Utils
             return null;
         }
 
-        public static bool IsExplicitImplementation(MethodDefinition interfaceMethod, MethodDefinition implementation)
-        {
-            foreach (var @override in implementation.Overrides)
-                if (Helper.AreSame(interfaceMethod, @override))
-                    return true;
-            return false;
-        }
+        //public static MethodDefinition GetBaseMethod(MethodDefinition method, TypeDefinition type)
+        //{
+        //    if (!method.IsVirtual || method.IsNewSlot)
+        //        return null;
 
-        public static bool IsImplicitImplementation(MethodDefinition interfaceMethod, MethodDefinition implementation)
-        {
-            return implementation.IsPublic && Helper.IsOverrideCompliant(interfaceMethod, implementation);
-        }
+        //    var baseType = GetBaseTypeDefinition(type);
+        //    while (baseType != null)
+        //    {                
+        //        var @base = baseType.Methods.SingleOrDefault(candidate => Helper.HaveSameSignature(candidate, method));
+        //        if (@base != null)
+        //            return @base;
+        //        baseType = Helper.GetBaseTypeDefinition(baseType);
+        //    }
+        //    return null;
+        //}
 
+        //public static MethodDefinition GetBaseMethod(MethodDefinition method)
+        //{
+        //    return GetBaseMethod(method, method.DeclaringType);
+        //}
 
-        public static MethodDefinition GetBaseMethod(MethodDefinition method, TypeDefinition type)
-        {
-            if (method.IsVirtual)
-            {
-                var baseType = Helper.GetBaseTypeDefinition(type);
-                while (baseType != null)
-                {
-                    var @base = baseType.Methods.SingleOrDefault(m => Helper.HaveSameSignature(m, method));
-                    if (@base != null)
-                        return @base;
-                    baseType = Helper.GetBaseTypeDefinition(baseType);
-                }
-            }
-            return method;
-        }
-
-        public static MethodDefinition GetBaseMethod(MethodDefinition method)
-        {
-            return GetBaseMethod(method, method.DeclaringType);
-        }
-
-        // Gathers methods from all interfaces, and the intefraces that the type's interfaces are inheriting from
-        // Not need to check type.BaseType intefraces as they have to be by definition implemented in the base type
-        // If the current type implements any of the baseType.Interfraces methods, it's done by normal polimorphism mechanism        
-        // NOTE interface hierarchy is flat! Interfaces collection contains both directly and indirectly implemented interfaces
-        public static List<MethodDefinition> GetInterfaceMethods(TypeDefinition type)
-        {
-            var interfaceMethods = new List<MethodDefinition>();
-            foreach (var @interface in type.Interfaces)
-            {
-                var definition = @interface.Resolve();
-                foreach (var method in definition.Methods)
-                {
-                    //if (!result.Any(m => HaveSameSignature(m, method)))
-                    // Include all methods, even the hidden ones
-                    interfaceMethods.Add(method);
-                }
-            }
-            return interfaceMethods;
-        }
-
+   
         //public static string GetMethodSignatureString(MethodReference method)
         //{
         //    StringBuilder signature = new StringBuilder();

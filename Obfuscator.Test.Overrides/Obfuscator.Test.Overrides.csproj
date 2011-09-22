@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CB8EE040-0CCE-4863-84C8-FBF63170CAD8}</ProjectGuid>
+    <ProjectGuid>{376D040F-4C6C-43CB-83C7-6E6A5525C3E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Obfuscator.Renaming</RootNamespace>
-    <AssemblyName>Obfuscator.Renaming</AssemblyName>
+    <RootNamespace>Obfuscator.Test.Overrides</RootNamespace>
+    <AssemblyName>Obfuscator.Test.Overrides</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,57 +30,29 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CTSNameGenerator.cs" />
-    <Compile Include="INameGenerator.cs" />
-    <Compile Include="Renamer.cs" />
-    <Compile Include="Steps\BuildRenameMapStep.cs" />
-    <Compile Include="Steps\FillOverrideTablesStep.cs" />
-    <Compile Include="Steps\RenameStep.cs" />
-    <Compile Include="Steps\FixReferencesStep.cs" />
-    <Compile Include="CLSNameGenerator.cs" />
-    <Compile Include="StringGenerator.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="Class2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenameMapVisitor.cs" />
-    <Compile Include="Logging\RenameMapVisitor.logging.cs" />
-    <Compile Include="Steps\TypeMapStep.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Obfuscator.Common\Obfuscator.Common.csproj">
-      <Project>{F2BF29A6-49B2-422A-9005-638E61F0AA97}</Project>
-      <Name>Obfuscator.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Obfuscator.MetadataBuilder\Obfuscator.MetadataBuilder\Obfuscator.MetadataBuilder.csproj">
-      <Project>{95DA839A-E705-4857-BA2B-0F4370C680E0}</Project>
-      <Name>Obfuscator.MetadataBuilder</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ThirdParty\Cecil 1\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ThirdParty\Cecil 1\rocks\Mono.Cecil.Rocks.csproj">
-      <Project>{FBC6DD59-D09D-499C-B03C-99C1C78FF2AC}</Project>
-      <Name>Mono.Cecil.Rocks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Obfuscator.Utils\Obfuscator.Utils.csproj">
-      <Project>{E10298D8-872D-47EB-BEFC-9FD00E78A296}</Project>
-      <Name>Obfuscator.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\TestLibraries\bin" /Y
+xcopy "$(TargetDir)*.dll" "$(SolutionDir)\TestLibraries\bin" /Y
+xcopy "$(TargetDir)*.pdb" "$(SolutionDir)\TestLibraries\bin" /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

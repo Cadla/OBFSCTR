@@ -26,11 +26,12 @@ namespace Obfuscator.Configuration
         public InputConfiguration()
         {
             _resolver = new AssemblyResolver();
-            _readerParameters = new ReaderParameters();
+            _readerParameters = new ReaderParameters() { ReadSymbols = true };
         }
 
         protected abstract bool IsEntryPoint(Member member);
-        protected abstract bool InvokesByName(Method method, out int paramIndex);
+        protected abstract bool InvokedByName(Method method, out int nameIndex, out int typeInstanceIndex);
+        protected abstract bool AccessedByName(COM.Type type, out int nameIndex);
         //protected abstract bool ShouldPreserveStrings(Method method);
         protected abstract bool ShouldKeepNamespacess(Assembly assembly);
 
@@ -46,11 +47,16 @@ namespace Obfuscator.Configuration
             return GetAssemblies().Select(a => a.AssemblyDefinition);
         }
 
-        bool IFilter.InvokesByName(MethodReference method, out int paramIndex)
+        bool IFilter.AccessedByName(TypeReference type, out int nameIndex)
         {
-            return InvokesByName(new Method(method), out paramIndex);
+            return AccessedByName(new COM.Type(type), out nameIndex);
         }
 
+        bool IFilter.InvokedByName(MethodReference method, out int nameIndex, out int typeInstanceIndex)
+        {
+            return InvokedByName(new Method(method), out nameIndex, out typeInstanceIndex);
+        }
+        
         bool IFilter.ShouldKeepNamespaces(AssemblyDefinition assembly)
         {
             return ShouldKeepNamespacess(new Assembly(assembly));
@@ -109,14 +115,24 @@ namespace Obfuscator.Configuration
             return new Assembly(Resolve(name));
         }
 
-        private AssemblyDefinition Resolve(string name)
+        public AssemblyDefinition Resolve(string name)
         {
-            if (File.Exists(name))
-            {
-                AssemblyDefinition assemblyDefinition = AssemblyDefinition.ReadAssembly(name, _readerParameters);
-                _resolver.CacheAssembly(assemblyDefinition);
-                return assemblyDefinition;
-            }
+            //if (File.Exists(name))
+            //{
+            //    AssemblyDefinition assemblyDefinition;
+            //    if(name.Contains("mscorlib"))
+            //        assemblyDefinition = AssemblyDefinition.ReadAssembly(name, new ReaderParameters() {ReadSymbols = false});
+            //    else
+            //        assemblyDefinition = AssemblyDefinition.ReadAssembly(name, _readerParameters);
+
+            //    if(_resolver.Resolve(assemblyDefinition.Name, _readerParameters))
+
+            //    _resolver.CacheAssembly(assemblyDefinition);
+            //    return assemblyDefinition;
+            //}
+            
+            if(name == "mscorlib")
+                return _resolver.Resolve(new AssemblyNameReference(name, new Version()), new ReaderParameters{ReadSymbols = false});
             return _resolver.Resolve(new AssemblyNameReference(name, new Version()), _readerParameters);
         }
     }

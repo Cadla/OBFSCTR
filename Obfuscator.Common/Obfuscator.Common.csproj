@@ -48,7 +48,7 @@
     <Compile Include="COM\Method.cs" />
     <Compile Include="COM\Property.cs" />
     <Compile Include="COM\Type.cs" />
-    <Compile Include="Configuration\DefaulConfiguration.cs" />
+    <Compile Include="Configuration\DefaultConfiguration.cs" />
     <Compile Include="IFilter.cs" />
     <Compile Include="Configuration\InputConfiguration.cs" />
     <Compile Include="ObfuscationContext.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Mono.Cecil;
 using Obfuscator.Utils;
+using System.Diagnostics;
 
 namespace Obfuscator.Steps.Renaming
 {
@@ -43,9 +44,21 @@ namespace Obfuscator.Steps.Renaming
         {
             if (newName == String.Empty)
                 return;
-            if (!Context.Options.HasFlag(ObfuscationOptions.KeepNamespaces) && reference.DeclaringType == null)
-                ((TypeReference)reference).Namespace = String.Empty;                            
-            reference.Name = newName;
+            var typeReference = reference as TypeReference;
+            if (typeReference != null)
+            {
+                typeReference = typeReference.GetElementType();
+                if (!typeReference.IsNested && !Context.Options.HasFlag(ObfuscationOptions.KeepNamespaces))
+                    typeReference.Namespace = String.Empty;
+                typeReference.Name = newName;
+            }
+            else
+            {
+                if (reference is MethodSpecification)
+                    ((MethodSpecification)reference).ElementMethod.Name = newName;
+                else
+                    reference.Name = newName;
+            }
         }
     }
 }

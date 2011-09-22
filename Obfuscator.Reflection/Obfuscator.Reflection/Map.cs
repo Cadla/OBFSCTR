@@ -9,28 +9,48 @@ using Mono.Cecil.Cil;
 using Obfuscator.MetadataBuilder.Extensions;
 using Obfuscator;
 
-namespace Reflection
+namespace Obfuscator.Reflection
 {
-    internal static class MapInjector
-    {        
-        
-    }
-
     internal static class Map
     {
         private static MD5 hash;
         private static Dictionary<string, string> NameMap;
-
-        private static void Add(string oldName, string newName)
-        {
-            //NameMap.Add(GetMd5Hash(oldName), newName);
-            NameMap.Add(oldName, newName);
-        }
+        private const string typeMemberSeparator = "::";
 
         static Map()
         {
             hash = MD5.Create();
             NameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);       
+        }
+        
+        public static string GetType(string typeFullName)
+        {
+            return GetName(typeFullName, GetKey(typeFullName));
+        }
+
+        public static string GetMember(System.Type type, string memberName)
+        {            
+            return GetName(memberName, GetKey(type.FullName, memberName));
+        }
+
+        public static string GetMemberWithParameters(System.Type type, string memberName, System.Type[] parameters)
+        {
+            return GetName(memberName, GetKey(type.FullName, memberName, parameters));
+        }
+
+        private static void AddType(string oldName, string newName)
+        {
+            NameMap.Add(GetKey(oldName), newName);
+        }
+
+        private static void AddMember(string typeName, string oldName, string newName)
+        {
+            NameMap.Add(GetKey(typeName, oldName), newName);
+        }
+
+        private static void AddMemberWithParameters(string typeName, string oldName, string parametersString, string newName)
+        {            
+            NameMap.Add(GetKey(typeName, oldName, parametersString), newName);
         }
 
         static string GetMd5Hash(string input)
@@ -45,17 +65,52 @@ namespace Reflection
             return sBuilder.ToString();
         }     
 
-        public static string Get(string str)        
+        static string GetName(string str, string key)
         {
-            string result;
             //string hashed = GetMd5Hash(str);
-            string hashed = str;
-            if (NameMap.TryGetValue(hashed, out result))
+            string result;
+            if (NameMap.TryGetValue(key, out result))
                 return result;
             return str;
         }
 
-   
+        private static string GetKey(string typeName)
+        {
+            return typeName;
+        }
+
+        static string GetKey(string typeName, string oldName)
+        {
+            return String.Concat(GetKey(typeName), typeMemberSeparator, oldName);
+        }
+
+        static string GetKey(string typeName, string oldName, System.Type[] parameters)
+        {
+            return GetKey(typeName, oldName, GetParametersString(parameters));
+        }
+
+        static string GetKey(string typeName, string oldName, string parametersString)
+        {
+            return String.Concat(GetKey(typeName, oldName), parametersString);
+        }
+
+        internal static string GetParametersString(System.Type[] parameters)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (parameters.Length > 0)
+            {
+                builder.Append('(');
+                foreach (var type in parameters)
+                {
+                    builder.Append(type.FullName);
+                    builder.Append(',');
+                }
+                builder.Remove(builder.Length - 1, 1);
+                builder.Append(')');
+                return builder.ToString();
+            }
+            else return "()";
+        }
     }
 }
 

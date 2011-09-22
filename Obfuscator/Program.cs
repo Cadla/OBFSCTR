@@ -3,6 +3,10 @@ using Obfuscator.Configuration;
 using Obfuscator.Steps;
 using Obfuscator.Steps.Reflection;
 using Obfuscator.Steps.Renaming;
+using Obfuscator.Configuration.COM;
+using System.Collections.Generic;
+using Mono.Cecil;
+
 
 namespace Obfuscator
 {
@@ -16,11 +20,12 @@ namespace Obfuscator
         public string[] AssemblyNames;
     }
 
+
     public class Program
     {
         public const string TEST_LIBRARIES = @"D:\Magisterka-nowy\Obfuscator\TestLibraries\bin\";
         public const string NOT_NECESSARY = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client";
-        public const string OUTPUT = @"D:\Magisterka-nowy\Obfuscator\output\";
+        public const string OUTPUT = @"D:\Magisterka-nowy\Obfuscator\TestLibraries\output\";
 
         static void Main(string[] args)
         {
@@ -32,14 +37,13 @@ namespace Obfuscator
 
                 configuration.AddSearchDirectory(TEST_LIBRARIES);
                 configuration.AddSearchDirectory(NOT_NECESSARY);
-
-                
+                                
                 foreach (var assembly in options.AssemblyNames)
                 {
                     configuration.AddAssembly(assembly);
                 }
 
-                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance);
+                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance | ObfuscationOptions.KeepNamespaces);
                 
                 context.OutputDirectory = OUTPUT;
                 
@@ -52,9 +56,11 @@ namespace Obfuscator
         static Pipeline GetStandardPipeline()
         {
             Pipeline p = new Pipeline();
+            //p.AppendStep(new ConverterStep());
+            //p.AppendStep(new TypeMapStep());
             p.AppendStep(new FillOverrideTables());
             p.AppendStep(new BuildRenameMapStep());
-       //     p.AppendStep(new FixVirtualMethodsNames());
+            //p.AppendStep(new FixVirtualMethodsNames());
             p.AppendStep(new FixReferencesStep());
             p.AppendStep(new ReplaceMemberNameStringsStep());
             p.AppendStep(new RenameStep());

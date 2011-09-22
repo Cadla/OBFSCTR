@@ -7,15 +7,15 @@ using System.Diagnostics;
 
 namespace Obfuscator.Renaming
 {
-    public class ScopeNameGenerator
+    public class CLSNameGenerator : INameGenerator
     {
-        INameGenerator _nameGenerator;
+        IStringGenerator _nameGenerator;
         IDictionary<string, string> _scopeLastNameDictionary;        
 
         public bool CLSCompliance { get; private set; }
-        public bool KeepNamespaces { get; private set; }
+        public bool KeepNamespaces { get; set; }
 
-        public ScopeNameGenerator(INameGenerator nameGenerator, bool clsCompliant, bool keepNamespaces)
+        public CLSNameGenerator(IStringGenerator nameGenerator, bool clsCompliant, bool keepNamespaces)
         {
             _scopeLastNameDictionary = new Dictionary<string, string>();            
             _nameGenerator = nameGenerator;
@@ -24,24 +24,25 @@ namespace Obfuscator.Renaming
         }
 
         // LOOKUP Path.GetRandomFileName BaseBMethod        
-        public string GetMemberName(IMemberDefinition member, string declaringTypeName)
+        public string GetMemberName(IMemberDefinition member)
         {
-            Debug.Assert(member.DeclaringType != null);
-
-            string scopeId, newName;            
-            if (CLSCompliance)
-            {
-                scopeId = GetCLSMemberScope(member);
-                newName = GetNextName(scopeId);
-                while (newName == declaringTypeName)
-                    newName = GetNextName(scopeId);
-            }
-            else
-            {
-                scopeId = GetCTSMemberScope(member);
-                newName = GetNextName(scopeId);
-            }            
-            return newName + x++;
+            //Debug.Assert(member.DeclaringType != null);
+            
+            //string scopeId, newName;            
+            ////if (CLSCompliance)
+            ////{
+            ////    scopeId = GetCLSMemberScope(member);
+            ////    newName = GetNextName(scopeId);
+            ////    while (newName == declaringTypeName)
+            ////        newName = GetNextName(scopeId);
+            ////}
+            ////else
+            ////{
+            ////    scopeId = GetCTSMemberScope(member);
+            ////    newName = GetNextName(scopeId);
+            ////}            
+            //return newName + x++;
+            return string.Empty;
         }
 
         public int x = 0;

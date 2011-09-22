@@ -21,7 +21,7 @@ namespace Obfuscator.Steps.Renaming
 
         protected override void  ProcessAssembly(AssemblyDefinition assembly)
         {
-            Renamer renamer = new Renamer(new NameGenerator(ALPHABET), GetOptionsForAssembly(assembly));
+            Renamer renamer = new Renamer(new StringGenerator(ALPHABET), GetOptionsForAssembly(assembly));
             RenameMapVisitor renameMapVisitor = new RenameMapVisitor(renamer, Context.InputConfiguration);
             _visitor.ConductVisit(assembly, renameMapVisitor);
 

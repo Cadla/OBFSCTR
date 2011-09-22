@@ -13,7 +13,7 @@ namespace Obfuscator
         ModuleDefinition _module;
         Func<TypeReference, bool> _toImport;
         
-        static IDictionary<TypeReference, TypeReference> _cache = new Dictionary<TypeReference, TypeReference>();
+        IDictionary<TypeReference, TypeReference> _cache = new Dictionary<TypeReference, TypeReference>();
 
         public static ReferenceResolver GetDefaultResolver(ModuleDefinition module)
         {                    
@@ -111,8 +111,10 @@ namespace Obfuscator
             };
 
             CopyGenericParameters(method, reference);
-
+            
+            
             var providers = paramProviders.ToList();
+            providers.Clear();
             providers.Add(declaringType);
             providers.Add(reference);
 
@@ -178,7 +180,7 @@ namespace Obfuscator
             }
         }
 
-        private TypeReference GetGenericParameter(TypeReference type, IGenericParameterProvider[] paramProviders)
+        public TypeReference GetGenericParameter(TypeReference type, IGenericParameterProvider[] paramProviders)
         {
             var genericParameter = (GenericParameter)type;
             IGenericParameterProvider context = GetContext(genericParameter, paramProviders);
@@ -191,14 +193,16 @@ namespace Obfuscator
             paramProviders = paramProviders.Select(x => GetElementProvider(x)).ToArray();
 
             if (parameter.MetadataType == MetadataType.MVar)
-                return paramProviders.
-                    Where(x => x.GenericParameterType == GenericParameterType.Method).
-                    First(x => Helper.AreSame((MethodReference)x, (MethodReference)parameter.Owner));
+                return paramProviders.Single(x => x.GenericParameterType == GenericParameterType.Method);
+                //return paramProviders.
+                //    Where(x => x.GenericParameterType == GenericParameterType.Method).
+                //    First(x => Helper.AreSame((MethodReference)x, (MethodReference)parameter.Owner));
 
             else
-                return paramProviders.
-                    Where(x => x.GenericParameterType == GenericParameterType.Type).
-                    First(x => Helper.AreSame((TypeReference)x, (TypeReference)parameter.Owner));
+                return paramProviders.Single(x => x.GenericParameterType == GenericParameterType.Type);
+                //return paramProviders.
+                //    Where(x => x.GenericParameterType == GenericParameterType.Type).
+                //    First(x => Helper.AreSame((TypeReference)x, (TypeReference)parameter.Owner));
         }
 
         //private void GetElementProvider(ref IGenericParameterProvider[] paramProviders)
