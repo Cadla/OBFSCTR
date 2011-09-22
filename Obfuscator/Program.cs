@@ -18,6 +18,9 @@ namespace Obfuscator
 
         [OptionArray("a", "assembly", Required = true, HelpText = "Input assembly name")]
         public string[] AssemblyNames;
+
+        [OptionArray("r", "referencingAssembly", Required = false, HelpText = "Referencing assembly names")]
+        public string[] ReferencingAssemblyNames;
     }
 
 
@@ -43,7 +46,7 @@ namespace Obfuscator
                     configuration.AddAssembly(assembly);
                 }
 
-                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance | ObfuscationOptions.KeepNamespaces);
+                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance);
                 
                 context.OutputDirectory = OUTPUT;
                 

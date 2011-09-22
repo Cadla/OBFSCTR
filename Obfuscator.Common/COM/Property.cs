@@ -10,6 +10,7 @@ namespace Obfuscator.Configuration.COM
     {
         PropertyDefinition _propertyDefinition;
 
+       
         internal PropertyDefinition PropertyDefinition
         {
             get

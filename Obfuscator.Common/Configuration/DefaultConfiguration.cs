@@ -10,12 +10,9 @@ namespace Obfuscator.Configuration
 {
     public sealed class DefaultConfiguration : InputConfiguration
     {
-        public DefaultConfiguration()
-        {
-            SetInvokeByName();
-        }
 
         private List<Assembly> _assemblies = new List<Assembly>();
+        private List<Assembly> _referencingAssemblies = new List<Assembly>();
 
         public List<Assembly> Assemblies
         {
@@ -24,6 +21,15 @@ namespace Obfuscator.Configuration
                 return _assemblies;
             }
         }
+
+        public List<Assembly> ReferencingAssemblies
+        {
+            get
+            {
+                return _referencingAssemblies;
+            }
+        }
+
 
         private HashSet<Member> EntryPoints
         {
@@ -60,9 +66,21 @@ namespace Obfuscator.Configuration
             _assemblies.Add(ResolveAssembly(name));
         }
 
+        public void AddReferencingAssembly(string name)
+        {
+            _assemblies.Add(ResolveAssembly(name));
+            _referencingAssemblies.Add(ResolveAssembly(name));
+        }
+
+
         protected override IEnumerable<Assembly> GetAssemblies()
         {
-            return _assemblies;
+            return _assemblies.Union(_referencingAssemblies);
+        }
+
+        protected override bool IsReferencingAssembly(Assembly assembly)
+        {
+            return _referencingAssemblies.Contains(assembly);
         }
 
         protected override bool IsEntryPoint(Member member)
@@ -74,6 +92,7 @@ namespace Obfuscator.Configuration
                 return true;
             else if (EntryPoints.Contains(member.DeclaringType))
                 return true;
+
             return false;
         }
 
@@ -82,21 +101,21 @@ namespace Obfuscator.Configuration
             return false;
         }
 
-        protected override bool InvokedByName(Method method, out int nameIndex, out int typeInstanceIndex)
-        {
-            if (InvokedByN == null)
-                SetInvokeByName();
-            typeInstanceIndex = -1;
+        //protected override bool InvokedByName(Method method, out int nameIndex, out int typeInstanceIndex)
+        //{
+        //    if (InvokedByN == null)
+        //        SetInvokeByName();
+        //    typeInstanceIndex = -1;
 
-            if (InvokedByN.TryGetValue(method, out nameIndex))
-                return true;
-            return false;
-        }
+        //    if (InvokedByN.TryGetValue(method, out nameIndex))
+        //        return true;
+        //    return false;
+        //}
 
-        protected override bool AccessedByName(COM.Type type, out int nameIndex)
-        {
-            throw new NotImplementedException();
-        }
+        //protected override bool AccessedByName(COM.Type type, out int nameIndex)
+        //{
+        //    throw new NotImplementedException();
+        //}
         
 
         private void SetEntryPoints()
@@ -107,57 +126,13 @@ namespace Obfuscator.Configuration
                 var types = Types(assembly);
                 foreach (var type in types)
                 {
-                    //if (type.FullName == "ICSharpCode.ILSpy.Xaml.XamlResourceNodeFactory" ||
-                    //   type.FullName == "ICSharpCode.ILSpy.Xaml.BamlResourceNodeFactory" ||
-                    if(type.FullName == "ICSharpCode.ILSpy.TreeNodes.IResourceNodeFactory" ||
-                        type.FullName.Contains("Menu") ||
-                        type.FullName == "ICSharpCode.ILSpy.Language" ||
-                        type.FullName.Contains("Metadata") ||
-                        type.FullName.Contains("Attribute") ||
-                        type.FullName.Contains("Xaml"))
-                        skipList.Add(type);
-                    //skipList.AddRange(Methods(type).Where(m => m.Name == "MethodA"));
+                    if (type.Name == "Settings" || type.FullName == "Gendarme.Framework.EngineDependencyAttribute" || type.Name == "IAssemblyRule")
+                        skipList.Add(type);                        
                 }
             }
             EntryPoints = skipList;
         }
-
-        private void SetAccessedByName()
-        {
-            
-
-
-
-        }
-
-        private void SetInvokeByName()
-        {
-            InvokedByN = new Dictionary<Method, int>();
-
-            // TODO: move to input configuration?
-
-
-            //var typeType = Types(ResolveAssembly(typeof(System.Type).Module.FullyQualifiedName)).First(t => t.FullName == "System.Type");
-            //var methods = Methods(typeType).Where(m => m.Name == "GetMethod" && m.IsPublic && m.Parameters.ElementAt(0).FullName == "System.String" && m.ParametersCount == 1);
-
-            //foreach (var method in methods)
-            //    InvokedByN.Add(method, 1);
-
-            //var assemblyType = corlib.GetType("System.Reflection.Assembly");
-            //var assemblyMethods = assemblyType.GetMethods().Where(m => m.HasParameters && m.Parameters[0].ParameterType.FullName == "System.String");
-
-
-            ////foreach (var method in assemblyMethods)
-            ////    InvokeByName.Add(new Method(method), 1);
-
-
-            //var resourcesType = Types(ResolveAssembly("mscorlib")).First(t => t.FullName == "System.Resources.ResourceManager");
-            //var resourceManagerMethods = Methods(resourcesType).Where(m => m.IsConstructor && m.ParametersCount > 0 && m.Parameters.ElementAt(0).FullName == "System.String");
-            
-            //foreach (var method in resourceManagerMethods)
-            //    InvokedByName.Add(method, 1);                                    
-        }
-
+     
    
     }
 }

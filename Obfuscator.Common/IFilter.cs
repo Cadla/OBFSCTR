@@ -10,8 +10,9 @@ namespace Obfuscator
     {
         bool ShouldSkip(IMemberDefinition token);
         bool ShouldKeepNamespaces(AssemblyDefinition assembly);
-        bool AccessedByName(TypeReference type, out int nameIndex);        
-        bool InvokedByName(MethodReference method, out int nameIndex, out int typeInstanceIndex);        
+        bool IsReferencingAssembly(AssemblyDefinition assembly);
+        //bool AccessedByName(TypeReference type, out int nameIndex);        
+     //   bool InvokedByName(MethodReference method, out int nameIndex, out int typeInstanceIndex);        
     }
 }
 

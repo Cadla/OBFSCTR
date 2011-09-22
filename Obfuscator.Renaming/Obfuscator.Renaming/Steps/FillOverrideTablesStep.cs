@@ -18,6 +18,7 @@ namespace Obfuscator.Steps.Renaming
         {
             _methodOverrides = new Dictionary<MethodDefinition, List<MethodReference>>();            
         }
+        
 
         protected override void ProcessAssembly(AssemblyDefinition assembly)
         {

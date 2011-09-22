@@ -90,7 +90,7 @@ namespace Obfuscator.Renaming
                 if (_options.HasFlag(ObfuscationOptions.KeepNamespaces) && member.DeclaringType == null)
                     newName = ((TypeDefinition)member).Namespace + '.' + newName;
 
-                ResourcesNames[resource] = newName ;
+                ResourcesNames[resource] = newName;
                 return newName;
             }
             return resource.Name;
@@ -100,8 +100,13 @@ namespace Obfuscator.Renaming
         private string MapMemberDefinition(IMemberDefinition member)
         {
             string newName = _scopeNameGenerator.GetMemberName(member);
+#if APPEND
             DefinitionsMap[member] = member.Name + newName;
             return member.Name + newName;
+#else
+            DefinitionsMap[member] = newName;
+            return newName;
+#endif
         }
 
         private string MapTypeDefinition(TypeDefinition type)
@@ -110,8 +115,13 @@ namespace Obfuscator.Renaming
                 return MapMemberDefinition(type);
 
             string newName = _scopeNameGenerator.GetTypeName(type);
+#if APPEND
             DefinitionsMap[type] = type.Name + newName;
             return type.Name + newName;
+#else
+            DefinitionsMap[type] = newName;
+            return newName;
+#endif
         }
 
         public bool TryGetMappedName(IMemberDefinition member, out string name)

@@ -25,22 +25,34 @@ namespace Obfuscator.Reflection
         
         public static string GetType(string typeFullName)
         {
-            return GetName(typeFullName, GetKey(typeFullName));
+#if HASH
+            return GetName(typeFullName, GetMd5Hash(typeFullName));
+#else
+            return GetName(typeFullName, typeFullName);
+#endif
         }
 
         public static string GetMember(System.Type type, string memberName)
         {            
+#if HASH
+            return GetName(memberName, GetKey(type.FullName, GetMd5Hash(memberName)));
+#else
             return GetName(memberName, GetKey(type.FullName, memberName));
+#endif
         }
 
         public static string GetMemberWithParameters(System.Type type, string memberName, System.Type[] parameters)
         {
+#if HASH
+            return GetName(memberName, GetKey(type.FullName, GetMd5Hash(memberName), parameters));
+#else
             return GetName(memberName, GetKey(type.FullName, memberName, parameters));
+#endif
         }
 
         private static void AddType(string oldName, string newName)
         {
-            NameMap.Add(GetKey(oldName), newName);
+            NameMap.Add(oldName, newName);
         }
 
         private static void AddMember(string typeName, string oldName, string newName)
@@ -52,8 +64,8 @@ namespace Obfuscator.Reflection
         {            
             NameMap.Add(GetKey(typeName, oldName, parametersString), newName);
         }
-
-        static string GetMd5Hash(string input)
+#if HASH
+        internal static string GetMd5Hash(string input)
         {
             byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(input));
             StringBuilder sBuilder = new StringBuilder();
@@ -64,24 +76,19 @@ namespace Obfuscator.Reflection
             }
             return sBuilder.ToString();
         }     
+#endif
 
         static string GetName(string str, string key)
-        {
-            //string hashed = GetMd5Hash(str);
+        {            
             string result;
             if (NameMap.TryGetValue(key, out result))
                 return result;
             return str;
         }
 
-        private static string GetKey(string typeName)
-        {
-            return typeName;
-        }
-
         static string GetKey(string typeName, string oldName)
         {
-            return String.Concat(GetKey(typeName), typeMemberSeparator, oldName);
+            return String.Concat(typeName, typeMemberSeparator, oldName);
         }
 
         static string GetKey(string typeName, string oldName, System.Type[] parameters)
@@ -94,7 +101,7 @@ namespace Obfuscator.Reflection
             return String.Concat(GetKey(typeName, oldName), parametersString);
         }
 
-        internal static string GetParametersString(System.Type[] parameters)
+        static string GetParametersString(System.Type[] parameters)
         {
             StringBuilder builder = new StringBuilder();
             if (parameters.Length > 0)

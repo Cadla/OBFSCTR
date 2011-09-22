@@ -30,10 +30,11 @@ namespace Obfuscator.Configuration
         }
 
         protected abstract bool IsEntryPoint(Member member);
-        protected abstract bool InvokedByName(Method method, out int nameIndex, out int typeInstanceIndex);
-        protected abstract bool AccessedByName(COM.Type type, out int nameIndex);
+     //   protected abstract bool InvokedByName(Method method, out int nameIndex, out int typeInstanceIndex);
+     //   protected abstract bool AccessedByName(COM.Type type, out int nameIndex);
         //protected abstract bool ShouldPreserveStrings(Method method);
         protected abstract bool ShouldKeepNamespacess(Assembly assembly);
+        protected abstract bool IsReferencingAssembly(Assembly assembly);
 
         protected abstract IEnumerable<Assembly> GetAssemblies();        
 
@@ -47,15 +48,15 @@ namespace Obfuscator.Configuration
             return GetAssemblies().Select(a => a.AssemblyDefinition);
         }
 
-        bool IFilter.AccessedByName(TypeReference type, out int nameIndex)
-        {
-            return AccessedByName(new COM.Type(type), out nameIndex);
-        }
+        //bool IFilter.AccessedByName(TypeReference type, out int nameIndex)
+        //{
+        //    return AccessedByName(new COM.Type(type), out nameIndex);
+        //}
 
-        bool IFilter.InvokedByName(MethodReference method, out int nameIndex, out int typeInstanceIndex)
-        {
-            return InvokedByName(new Method(method), out nameIndex, out typeInstanceIndex);
-        }
+        //bool IFilter.InvokedByName(MethodReference method, out int nameIndex, out int typeInstanceIndex)
+        //{
+        //    return InvokedByName(new Method(method), out nameIndex, out typeInstanceIndex);
+        //}
         
         bool IFilter.ShouldKeepNamespaces(AssemblyDefinition assembly)
         {
@@ -65,6 +66,11 @@ namespace Obfuscator.Configuration
         bool IFilter.ShouldSkip(IMemberDefinition member)
         {
             return IsEntryPoint(new Member(member));
+        }
+
+        bool IFilter.IsReferencingAssembly(AssemblyDefinition assembly)
+        {
+            return IsReferencingAssembly(new Assembly(assembly));
         }
 
         protected static IList<COM.Type> Types(Assembly assembly)

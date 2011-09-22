@@ -14,19 +14,91 @@ namespace Obfuscator.Steps.Reflection
 {
     public class ReplaceMemberNameStringsStep : BaseStep
     {
-        IDictionary<MethodReference, ProxyType> SupportedMethodsProxies = new Dictionary<MethodReference, ProxyType>();
+        static HashSet<string> SupportedMethodNames;
+
+        static ReplaceMemberNameStringsStep()
+        {
+            SupportedMethodNames = new HashSet<string>()
+            {
+                "GetEvent",
+                "GetField",
+                "GetMember",
+                "GetMethod",
+                "GetNestedType",
+                "GetProperty",
+                "GetType"
+            };
+        }
+
+        static bool IsSupported(MethodReference method)
+        {
+            if (method.DeclaringType.FullName != "System.Type")
+                return false;
+
+            if (!method.HasParameters || method.Parameters.Count > 2)
+                return false;
+
+            return true;
+        }
+
+        static bool IsGetType(MethodReference method)
+        {
+            if (!IsSupported(method))
+                return false;
+
+            if (method.Name != "GetType")
+                return false;
+
+            if (method.Parameters.Count == 1 && method.Parameters[0].ParameterType.FullName == "System.String")
+                return true;
+
+            return false;
+        }
+
+        static bool IsGetMember(MethodReference method)
+        {
+            if (!IsSupported(method) || method.HasThis == false)
+                return false;
+
+            if (method.Parameters.Count == 1 && method.Parameters[0].ParameterType.FullName == "System.String")
+                return true;
+
+            return false;
+        }
+
+        static bool IsGetMemberWithParameters(MethodReference method)
+        {
+            if (!IsSupported(method) || method.HasThis == false)
+                return false;
+
+            if (method.Parameters.Count != 2)
+                return false;
+
+            if (method.Parameters[0].ParameterType.FullName == "System.String" && method.Parameters[1].ParameterType.FullName == "System.Type[]")
+                return true;
+
+            return false;
+        }
 
         protected override void ProcessAssembly(Mono.Cecil.AssemblyDefinition assembly)
         {
             var types = assembly.MainModule.GetTypes();
-
             var methods = assembly.MainModule.GetMemberReferences().Where(m => m is MethodReference).Cast<MethodReference>();
 
-            //var getMethod = methods.Single(m => m.Name == "GetMethod" && m.DeclaringType.FullName == "System.Type" && m.Parameters.Count == 1 && m.Parameters[0].ParameterType.FullName == "System.String");
-            //SupportedMethodsProxies.Add(getMethod, AccessorType.GetMember);
+            var supportedMethods = new Dictionary<MethodReference, ProxyType>();
+            foreach (var method in methods)
+            {
+                if (IsGetType(method))
+                    supportedMethods.Add(method, ProxyType.GetType);
+                else if (IsGetMember(method))
+                    supportedMethods.Add(method, ProxyType.GetMember);
+                else if (IsGetMemberWithParameters(method))
+                    supportedMethods.Add(method, ProxyType.GetMemberWithParameters);
+            }
 
-            var getMethodWithParameters = methods.Single(m => m.DeclaringType.FullName == "System.Type" && m.Name == "GetMethod" && m.Parameters.Count == 2 && m.Parameters[1].ParameterType.FullName == "System.Type[]");
-            SupportedMethodsProxies.Add(getMethodWithParameters, ProxyType.GetMemberWithParameters);
+            var resourcesManger = methods.SingleOrDefault(m => m.DeclaringType.FullName == "System.Resources.ResourceManager" && m.Name == ".ctor" && m.HasParameters && m.Parameters[0].ParameterType.FullName == "System.String");
+            if (resourcesManger != null)
+                supportedMethods.Add(resourcesManger, ProxyType.GetType);
 
             var map = MapInjector.InjectMap(assembly);
             MapInjector.FillMap(map, Context.DefinitionsRenameMap[assembly.Name], Context.Options.HasFlag(ObfuscationOptions.KeepNamespaces));
@@ -37,47 +109,47 @@ namespace Obfuscator.Steps.Reflection
             var getMemberWithParameters = map.Methods.Single(m => m.Name == "GetMemberWithParameters");
 
             foreach (var type in types)
-            {                
+            {
                 foreach (var method in type.Methods)
                 {
-                    if(method.HasBody)
-                    {                        
-                        var body = method.Body;
-                        var closures = GetLoadByNameInstructions(body);
-                        if (closures.Count == 0)
-                            continue;
-                        
-                        ILProcessor processor = body.GetILProcessor();                        
-                        foreach (var closure in closures)
+                    if (!method.HasBody)
+                        continue;
+
+                    var body = method.Body;
+                    var closures = GetLoadByNameInstructions(body, supportedMethods);
+                    if (closures.Count == 0)
+                        continue;
+
+                    ILProcessor processor = body.GetILProcessor();
+                    foreach (var closure in closures)
+                    {
+                        var proxyType = supportedMethods[closure.method];
+                        switch (proxyType)
                         {
-                            var proxyType = SupportedMethodsProxies[closure.method];
-                            switch (proxyType)
-                            {
-                                case ProxyType.GetType:
-                                    processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getType));        
-                                    break;
-                                case ProxyType.GetMember:
-                                    processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
-                                    processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getMember));        
-                                    break;
-                                case ProxyType.GetMemberWithParameters:
-                                    Queue<Instruction> loadSecondParameter = MethodCallClosure.LoadSecondParameterInstructions(closure);
-                                    processor.InsertBefore(closure.methodCall,
-                                        processor.Create(OpCodes.Call, getMemberWithParameters));
-                                    foreach(var x in loadSecondParameter)
-                                        processor.InsertBefore(closure.methodCall, x);                                        
-                                    processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));                                 
-                                    break;
-                            }
+                            case ProxyType.GetType:
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Call, getType));
+                                break;
+                            case ProxyType.GetMember:
+                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getMember));
+                                break;
+                            case ProxyType.GetMemberWithParameters:
+                                Queue<Instruction> loadSecondParameter = MethodCallClosure.LoadSecondParameterInstructions(closure);
+                                processor.InsertBefore(closure.methodCall,
+                                    processor.Create(OpCodes.Call, getMemberWithParameters));
+                                foreach (var x in loadSecondParameter)
+                                    processor.InsertBefore(closure.methodCall, x);
+                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                break;
                         }
-                        body.SimplifyMacros();
-                        body.OptimizeMacros();
                     }
+                    body.SimplifyMacros();
+                    body.OptimizeMacros();
                 }
             }
         }
 
-        private HashSet<MethodCallClosure> GetLoadByNameInstructions(MethodBody body)
+        private HashSet<MethodCallClosure> GetLoadByNameInstructions(MethodBody body, Dictionary<MethodReference, ProxyType> supportedMethods)
         {
             var closures = new HashSet<MethodCallClosure>();
             foreach (var instruction in body.Instructions)
@@ -85,7 +157,7 @@ namespace Obfuscator.Steps.Reflection
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null)
                 {
-                    if(SupportedMethodsProxies.ContainsKey(methodReference))
+                    if (supportedMethods.ContainsKey(methodReference))
                     {
                         var methodCalClosure = GetMethodClosure(instruction, methodReference);
                         closures.Add(methodCalClosure);
@@ -96,23 +168,21 @@ namespace Obfuscator.Steps.Reflection
             }
             return closures;
         }
-        
+
         static MethodCallClosure GetMethodClosure(Instruction methodCall, MethodReference methodReference)
         {
-            Debug.Assert(methodReference.HasThis);
-
-            MethodCallClosure closure = new MethodCallClosure();
-
             var parametersCount = methodReference.Parameters.Count;
 
+            MethodCallClosure closure = new MethodCallClosure();
             closure.method = methodReference;
             closure.methodCall = methodCall;
             closure.parameters = new Instruction[parametersCount];
             closure.opCode = methodCall.OpCode;
 
-            var paramCount = parametersCount + 1;  // +1 is for 'this'
+            var paramCount = parametersCount +  1;  // +1 is for 'this'
             var paramsToLoad = parametersCount;
 
+    
             var current = methodCall;
             while (--paramCount != 0)
             {
@@ -122,14 +192,16 @@ namespace Obfuscator.Steps.Reflection
                     closure.parameters[--paramsToLoad] = current;
 
                 int stackModifier = GetPositiveModifier(current.OpCode) - GetNegativeModifier(current.OpCode);
-
                 if (stackModifier < 1)
                     paramCount += stackModifier * (-1) + 1;
                 if (stackModifier > 1)
                     paramCount -= stackModifier;
-
             }
-            closure.thisLoad = current.Previous;
+
+            if (methodReference.HasThis == false)
+                closure.thisLoad = current;
+            else
+                closure.thisLoad = current.Previous;
             return closure;
         }
 
@@ -208,3 +280,4 @@ namespace Obfuscator.Steps.Reflection
         }
     }
 }
+

@@ -62,13 +62,30 @@ namespace Obfuscator.Reflection
                 Stack<Instruction> procedure;
                 if (member.DeclaringType != null)
                 {
-                    var declaringTypeNewName = member.DeclaringType.Namespace + '.' + renameData[member.DeclaringType];
-                    //if (member is MethodReference && ((MethodReference)member).HasParameters)
-                    //    procedure = AddMemberWithParameters(member, newName, declaringTypeNewName, addMemberWithParameters);
-                    //else if (member is PropertyReference && ((PropertyReference)member).Parameters.Count != 0)
-                    procedure = AddMemberWithParameters(member, newName, declaringTypeNewName, addMemberWithParameters);
-                    //else
-                    //    procedure = AddMember(member, newName, declaringTypeNewName, addMember);
+                    string declaringTypeNewName = GetDeclaringTypeNewName(renameData, member.DeclaringType);
+                    if (member.DeclaringType.IsNested)
+                    {
+                        var type = member.DeclaringType.DeclaringType;
+                        do
+                        {
+                            declaringTypeNewName = GetDeclaringTypeNewName(renameData, type) + '+' + declaringTypeNewName;
+                            type = type.DeclaringType;
+                        } while (type != null);
+                    }
+
+                    if (keepNamespaces)
+                        declaringTypeNewName = member.DeclaringType.Namespace + '.' + declaringTypeNewName;
+
+                    if (member is MethodReference)
+                        procedure = AddMemberWithParameters((MethodReference)member, newName, declaringTypeNewName, addMemberWithParameters);
+                    else if (member is PropertyReference)
+                        procedure = AddMemberWithParameters((PropertyReference)member, newName, declaringTypeNewName, addMemberWithParameters);
+                    else
+                    {
+                        procedure = AddMember(member, newName, declaringTypeNewName, addMember);
+                        //if (member is TypeDefinition)
+                        //    AddNestedType((TypeDefinition)member, newName, declaringTypeNewName, addType, keepNamespaces);
+                    }
                 }
                 else
                     procedure = AddType((TypeDefinition)member, newName, addType, keepNamespaces);
@@ -78,19 +95,50 @@ namespace Obfuscator.Reflection
             }
         }
 
+        private static string GetDeclaringTypeNewName(IDictionary<IMemberDefinition, string> renameData, TypeDefinition member)
+        {
+            string newName;
+            if (!renameData.TryGetValue(member, out newName))
+                newName = member.Name;
+            return newName;
+        }
+
         static Stack<Instruction> AddType(TypeDefinition type, string newName, MethodReference addType, bool keepNamespaces)
         {
             var fullNewName = newName;
             if (keepNamespaces)
-                fullNewName = type.Namespace + '.' + newName;
+                fullNewName = type.Namespace + '.' + fullNewName;
 
             var result = new Stack<Instruction>();
             result.Push(Instruction.Create(OpCodes.Nop));
             result.Push(Instruction.Create(OpCodes.Call, addType));
             result.Push(Instruction.Create(OpCodes.Ldstr, fullNewName));
+#if HASH
+            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(type.FullName)));
+#else
             result.Push(Instruction.Create(OpCodes.Ldstr, type.FullName));
+#endif
             return result;
         }
+
+        //        static Stack<Instruction> AddNestedType(TypeDefinition type, string newName, string declaringTypeNewName,
+        //            MethodReference addType, bool keepNamespaces)
+        //        {
+        //            var fullNewName = declaringTypeNewName + '+' + newName;
+        //            if (keepNamespaces)
+        //                fullNewName = type.Namespace + '.' + fullNewName;
+
+        //            var result = new Stack<Instruction>();
+        //            result.Push(Instruction.Create(OpCodes.Nop));
+        //            result.Push(Instruction.Create(OpCodes.Call, addType));
+        //            result.Push(Instruction.Create(OpCodes.Ldstr, fullNewName));
+        //#if HASH
+        //            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(type.FullName)));
+        //#else
+        //            result.Push(Instruction.Create(OpCodes.Ldstr, type.FullName));
+        //#endif
+        //            return result;
+        //        }
 
         static Stack<Instruction> AddMember(IMemberDefinition member, string newName, string declaringTypeNewName,
             MethodReference addMember)
@@ -99,23 +147,49 @@ namespace Obfuscator.Reflection
             result.Push(Instruction.Create(OpCodes.Nop));
             result.Push(Instruction.Create(OpCodes.Call, addMember));
             result.Push(Instruction.Create(OpCodes.Ldstr, newName));
+#if HASH
+            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(member.Name)));
+#else
             result.Push(Instruction.Create(OpCodes.Ldstr, member.Name));
+#endif
             result.Push(Instruction.Create(OpCodes.Ldstr, declaringTypeNewName));
             return result;
         }
 
 
-        static Stack<Instruction> AddMemberWithParameters(IMemberDefinition member, string newName, string declaringTypeNewName,
+        static Stack<Instruction> AddMemberWithParameters(MethodReference method, string newName, string declaringTypeNewName,
             MethodReference addMemberWithParameters)
         {
             var result = new Stack<Instruction>();
             result.Push(Instruction.Create(OpCodes.Nop));
             result.Push(Instruction.Create(OpCodes.Call, addMemberWithParameters));
             result.Push(Instruction.Create(OpCodes.Ldstr, newName));
-            result.Push(Instruction.Create(OpCodes.Ldstr, GetParametersString((MethodReference)member)));
-            result.Push(Instruction.Create(OpCodes.Ldstr, member.Name));
+            result.Push(Instruction.Create(OpCodes.Ldstr, GetParametersString((MethodReference)method)));
+#if HASH
+            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(member.Name)));
+#else
+            result.Push(Instruction.Create(OpCodes.Ldstr, method.Name));
+#endif
             result.Push(Instruction.Create(OpCodes.Ldstr, declaringTypeNewName));
             return result;
+        }
+
+        static Stack<Instruction> AddMemberWithParameters(PropertyReference method, string newName, string declaringTypeNewName,
+    MethodReference addMemberWithParameters)
+        {
+            var result = new Stack<Instruction>();
+            result.Push(Instruction.Create(OpCodes.Nop));
+            result.Push(Instruction.Create(OpCodes.Call, addMemberWithParameters));
+            result.Push(Instruction.Create(OpCodes.Ldstr, newName));
+            result.Push(Instruction.Create(OpCodes.Ldstr, GetParametersString((PropertyReference)method)));
+#if HASH
+            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(member.Name)));
+#else
+            result.Push(Instruction.Create(OpCodes.Ldstr, method.Name));
+#endif
+            result.Push(Instruction.Create(OpCodes.Ldstr, declaringTypeNewName));
+            return result;
+
         }
 
         static string GetParametersString(MethodReference method)
@@ -126,6 +200,25 @@ namespace Obfuscator.Reflection
 
                 builder.Append('(');
                 foreach (var type in method.Parameters)
+                {
+                    builder.Append(type.ParameterType.FullName);
+                    builder.Append(',');
+                }
+                builder.Remove(builder.Length - 1, 1);
+                builder.Append(')');
+                return builder.ToString();
+            }
+            return "()";
+        }
+
+        static string GetParametersString(PropertyReference property)
+        {
+            if (property.Parameters.Count > 0)
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.Append('(');
+                foreach (var type in property.Parameters)
                 {
                     builder.Append(type.ParameterType.FullName);
                     builder.Append(',');
