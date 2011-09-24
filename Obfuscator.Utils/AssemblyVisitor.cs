@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
+using System.Collections;
 
 namespace Obfuscator.Utils
 {
@@ -10,7 +11,8 @@ namespace Obfuscator.Utils
     {
         private IAssemblyVisitor visitor_;
 
-        readonly HashSet<IMetadataTokenProvider> visited = new HashSet<IMetadataTokenProvider>();
+        //readonly HashSet<IMetadataTokenProvider> visited = new HashSet<IMetadataTokenProvider>();
+        HashSet<object> visited = new HashSet<object>();
 
         private delegate void VisitElement<T>(T element);
 
@@ -22,15 +24,12 @@ namespace Obfuscator.Utils
         public void ConductVisit(AssemblyDefinition assembly, IAssemblyVisitor visitor)
         {
             visitor_ = visitor;
-
+            visited.Clear();
             VisitAssemblyDefinition(assembly);
         }
 
         private void VisitAssemblyDefinition(AssemblyDefinition assembly)
         {
-            //if (CheckVisited(assembly))
-            //    return;
-
             visitor_.VisitAssemblyDefinition(assembly);
 
             VisitCollection(assembly.CustomAttributes, VisitCustomAttribute, () => assembly.HasCustomAttributes);
@@ -42,9 +41,6 @@ namespace Obfuscator.Utils
 
         private void VisitModuleDefinition(ModuleDefinition module)
         {
-            //if (CheckVisited(module))
-            //    return;            
-
             visitor_.VisitModuleDefinition(module);
 
             VisitCollection(module.AssemblyReferences, VisitAssemblyReference, () => module.HasAssemblyReferences);
@@ -65,10 +61,6 @@ namespace Obfuscator.Utils
         {
             if (type == null)
                 return;
-
-            // VisitTypeDefinition is invoked only once for each type
-            //if (CheckVisited(type))
-            //    return;
 
             visitor_.VisitTypeDefinition(type);
 
@@ -96,36 +88,9 @@ namespace Obfuscator.Utils
             VisitCollection(type.Methods, VisitMethodDefinition, () => type.HasMethods);
         }
 
-        private void VisitTypeReference(TypeReference type)
-        {
-            if (visitor_.Level() == VisitorLevel.Definitions)
-                return;
-
-            if (type == null)
-                return;
-
-            if (CheckVisited(type))
-                return;
-
-            if (type.IsGenericParameter)
-            {
-                VisitGenericParameter(type as GenericParameter);
-                return;
-            }
-
-            visitor_.VisitTypeReference(type);
-
-            VisitCollection(type.GenericParameters, VisitGenericParameter, () => type.HasGenericParameters);
-
-            // TODO check weather necessary
-            VisitTypeReference(type.DeclaringType);
-        }
-
+    
         private void VisitFieldDefinition(FieldDefinition field)
         {
-            //if (CheckVisited(field))
-            //    return;
-
             visitor_.VisitFieldDefinition(field);
 
             // TODO is there a way to get here not from declaring type of this field?
@@ -136,24 +101,10 @@ namespace Obfuscator.Utils
             VisitCollection(field.CustomAttributes, VisitCustomAttribute, () => field.HasCustomAttributes);
         }
 
-        private void VisitFieldReference(FieldReference field)
-        {
-            if (visitor_.Level() == VisitorLevel.Definitions)
-                return;
-
-            if (CheckVisited(field))
-                return;
-
-            visitor_.VisitFieldReference(field);
-
-            VisitTypeReference(field.FieldType);
-        }
+     
 
         private void VisitPropertyDefinition(PropertyDefinition property)
         {
-            //if (CheckVisited(property))
-            //    return;
-
             visitor_.VisitPropertyDefinition(property);
 
             // TODO is there a way to get here not from declaring type of this field?
@@ -163,21 +114,19 @@ namespace Obfuscator.Utils
 
             VisitCollection(property.CustomAttributes, VisitCustomAttribute, () => property.HasCustomAttributes);
 
-            VisitMethodDefinition(property.GetMethod);
+    //        VisitMethodDefinition(property.GetMethod);
 
-            VisitMethodDefinition(property.SetMethod);
+    //        VisitMethodDefinition(property.SetMethod);
 
             // NOTE property parameters - VB compability and also indexers in C#
             VisitCollection(property.Parameters, VisitParameterDefinition, () => property.HasParameters);
 
             // NOTE compatibility?
-            VisitCollection(property.OtherMethods, VisitMethodDefinition, () => property.HasOtherMethods);
+ //           VisitCollection(property.OtherMethods, VisitMethodDefinition, () => property.HasOtherMethods);
         }
 
         private void VisitEventDefinition(EventDefinition @event)
         {
-            //if (CheckVisited(@event))
-            //    return;
             visitor_.VisitEventDefinition(@event);
 
             // TODO is there a way to get here not from declaring type of this field?
@@ -187,24 +136,21 @@ namespace Obfuscator.Utils
 
             VisitCollection(@event.CustomAttributes, VisitCustomAttribute, () => @event.HasCustomAttributes);
 
-            VisitMethodDefinition(@event.AddMethod);
+       //     VisitMethodDefinition(@event.AddMethod);
 
-            VisitMethodDefinition(@event.RemoveMethod);
+       //     VisitMethodDefinition(@event.RemoveMethod);
 
             // NOTE seems like raise method for and event can be overrided in c++, http://msdn.microsoft.com/en-us/library/5f3csfsa.aspx
-            VisitMethodDefinition(@event.InvokeMethod);
+          //  VisitMethodDefinition(@event.InvokeMethod);
 
             // NOTE compatibility again?
-            VisitCollection(@event.OtherMethods, VisitMethodDefinition, () => @event.HasOtherMethods);
+//            VisitCollection(@event.OtherMethods, VisitMethodDefinition, () => @event.HasOtherMethods);
         }
 
         private void VisitMethodDefinition(MethodDefinition method)
         {
             if (method == null)
                 return;
-
-            //if (CheckVisited(method))
-            //    return;
 
             visitor_.VisitMethodDefinition(method);
 
@@ -267,10 +213,6 @@ namespace Obfuscator.Utils
 
         private void VisitVariable(VariableDefinition variable)
         {
-            // NOTE only mathers when referenced? 
-            //if (CheckVisited(variable))
-            //    return;
-
             visitor_.VisitVariableDefinition(variable);
 
             //VisitCollection(body.Variables, VisitVariable, () => b.HasVariables);
@@ -290,13 +232,60 @@ namespace Obfuscator.Utils
             VisitCollection(returnType.CustomAttributes, VisitCustomAttribute, () => returnType.HasCustomAttributes);
         }
 
+        private void VisitParameterDefinition(ParameterDefinition parameter)
+        {
+            visitor_.VisitParameterDefinition(parameter);
+
+            VisitCollection(parameter.CustomAttributes, VisitCustomAttribute, () => parameter.HasCustomAttributes);
+
+            VisitTypeReference(parameter.ParameterType);
+        }
+
+        private void VisitTypeReference(TypeReference type)
+        {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
+            if (type == null)
+                return;
+
+            //if (CheckVisited(type))
+            //    return;
+
+            if (type.IsGenericParameter)
+            {
+                VisitGenericParameter(type as GenericParameter);
+                return;
+            }
+
+            visitor_.VisitTypeReference(type);
+
+            VisitCollection(type.GenericParameters, VisitGenericParameter, () => type.HasGenericParameters);
+
+            // TODO check weather necessary
+            VisitTypeReference(type.DeclaringType);
+        }
+
+        private void VisitFieldReference(FieldReference field)
+        {
+            if (visitor_.Level() == VisitorLevel.Definitions)
+                return;
+
+            //if (CheckVisited(field))
+            //    return;
+
+            visitor_.VisitFieldReference(field);
+
+            VisitTypeReference(field.FieldType);
+        }
+
         private void VisitMethodReference(MethodReference method)
         {
             if (visitor_.Level() == VisitorLevel.Definitions)
                 return;
 
-            if (CheckVisited(method))
-                return;
+            //if (CheckVisited(method))
+            //    return;
 
             visitor_.VisitMethodReference(method);
 
@@ -314,48 +303,31 @@ namespace Obfuscator.Utils
             VisitMethodReturnType(method.MethodReturnType);
         }
 
-        private void VisitParameterDefinition(ParameterDefinition parameter)
-        {
-            if (CheckVisited(parameter))
-                return;
-
-            visitor_.VisitParameterDefinition(parameter);
-
-            VisitCollection(parameter.CustomAttributes, VisitCustomAttribute, () => parameter.HasCustomAttributes);
-
-            VisitTypeReference(parameter.ParameterType);
-        }
-
         private void VisitAssemblyReference(AssemblyNameReference reference)
         {
-            if (visitor_.Level() == VisitorLevel.Definitions)
-                return;
-
-            if (CheckVisited(reference))
-                return;
+            //if (CheckVisited(reference))
+            //    return;
 
             visitor_.VisitAssemblyReference(reference);
         }
 
         private void VisitGenericParameter(GenericParameter parameter)
         {
-            if (CheckVisited(parameter))
-                return;
-
             visitor_.VisitGenericParameter(parameter);
 
             VisitCollection(parameter.CustomAttributes, VisitCustomAttribute, () => parameter.HasCustomAttributes);
 
-            VisitTypeReference(parameter.DeclaringType);
+            // always null
+            //VisitTypeReference(parameter.DeclaringType);
 
             VisitCollection(parameter.GenericParameters, VisitGenericParameter, () => parameter.HasGenericParameters);
 
             VisitCollection(parameter.Constraints, VisitTypeReference, () => parameter.HasConstraints);
 
-            if (parameter.Owner is TypeReference)
-                VisitTypeReference((TypeReference)parameter.Owner);
-            else
-                VisitMethodReference((MethodReference)parameter.Owner);
+            //if (parameter.Owner is TypeReference)
+            //    VisitTypeReference((TypeReference)parameter.Owner);
+            //else
+            //    VisitMethodReference((MethodReference)parameter.Owner);
         }
 
         private void VisitCustomAttribute(CustomAttribute attribute)

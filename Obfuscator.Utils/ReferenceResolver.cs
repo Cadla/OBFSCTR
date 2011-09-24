@@ -28,7 +28,7 @@ namespace Obfuscator
             Action = (x => module.Import(x));
         }
 
-        public Func<TypeDefinition, TypeReference> Action
+        public Func<TypeReference, TypeReference> Action
         {
             get;
             set;
@@ -46,8 +46,9 @@ namespace Obfuscator
         {
             TypeReference reference;
 
-            if (TryToGetReferenceFromCache(type, out reference))
-                return reference;
+            // cashowanie tylko jezeli !TypeSpecification
+            //if (TryToGetReferenceFromCache(type, out reference))
+            //    return reference;
 
             if (type is TypeSpecification) //TODO || is open generic type ?
                 reference = ReferenceTypeSpecification(type, paramProviders);
@@ -63,7 +64,7 @@ namespace Obfuscator
             {
                 if (!Helper.AreSame(_module, type.Module))
                 {
-                    reference = Action(type.Resolve());
+                    reference = Action(type);
                     //throw new InvalidOperationException(String.Format("Type {0} doesn't exist", type.FullName));                   
                 }
                 else
@@ -165,7 +166,8 @@ namespace Obfuscator
             }
             else if (type.IsArray)
             {
-                return ReferenceType(((ArrayType)type).ElementType, paramProviders).MakeArrayType();
+                var array = (ArrayType)type;
+                return ReferenceType(array.ElementType, paramProviders).MakeArrayType(array.Rank);
             }
             else if (type.IsGenericInstance)
             {
@@ -182,9 +184,13 @@ namespace Obfuscator
 
         public TypeReference GetGenericParameter(TypeReference type, IGenericParameterProvider[] paramProviders)
         {
+#if GENERIC
             var genericParameter = (GenericParameter)type;
             IGenericParameterProvider context = GetContext(genericParameter, paramProviders);
             return context.GenericParameters[genericParameter.Position];
+#else
+            return type;
+#endif
         }
 
         private IGenericParameterProvider GetContext(GenericParameter parameter, IGenericParameterProvider[] paramProviders)

@@ -27,12 +27,12 @@ namespace Obfuscator.Reflection
             string destinationName = "<PrivateImplementationDetails>{" + Guid.NewGuid().ToString().ToUpper() + "}";
 
             ReferenceResolver resolver = new ReferenceResolver(module, Helper.IsCore);
-            resolver.Action = delegate(TypeDefinition typeDefinition)
+            resolver.Action = delegate(TypeReference typeReference)
             {
-                if (typeDefinition == mapTypeDefinition)
-                    return module.InjectType(typeDefinition, resolver);
+                if (typeReference == mapTypeDefinition)
+                    return module.InjectType(typeReference.Resolve(), resolver);
                 else
-                    return module.Import(typeDefinition);
+                    return module.Import(typeReference);
             };
 
             var newType = module.InjectType(mapTypeDefinition, resolver);

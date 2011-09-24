@@ -72,5 +72,6 @@ namespace Obfuscator.Steps {
         protected virtual void ProcessAssembly(AssemblyDefinition assembly)
         {
         }
+
 	}
 }

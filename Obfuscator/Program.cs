@@ -46,7 +46,7 @@ namespace Obfuscator
                     configuration.AddAssembly(assembly);
                 }
 
-                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance);
+                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance | ObfuscationOptions.KeepNamespaces);
                 
                 context.OutputDirectory = OUTPUT;
                 
@@ -64,9 +64,10 @@ namespace Obfuscator
             p.AppendStep(new FillOverrideTables());
             p.AppendStep(new BuildRenameMapStep());
             //p.AppendStep(new FixVirtualMethodsNames());
-            p.AppendStep(new FixReferencesStep());
+            //p.AppendStep(new FixReferencesStep());            
+            p.AppendStep(new RenameReferencesStep());
+            p.AppendStep(new RenameDefinitionsStep());
             p.AppendStep(new ReplaceMemberNameStringsStep());
-            p.AppendStep(new RenameStep());
             p.AppendStep(new OutputStep());
             return p;
         }

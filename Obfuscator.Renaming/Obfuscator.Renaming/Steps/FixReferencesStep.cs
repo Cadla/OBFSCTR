@@ -31,23 +31,42 @@ namespace Obfuscator.Steps.Renaming
             }
         }
 
-        //protected override void EndProcess()
-        //{
-        //    foreach (var assembly in Context.RanamingContext)
-        //    {
-        //        assembly.Value.RenameAll();
-        //    }
-
-        //    foreach (var reference in _memberReferences)
-        //    {                
-        //        reference.Key.Name = reference.Value;
-        //    }
-        //    foreach (var reference in _typeReferences)
-        //    {
-        //        reference.Key.Name = reference.Value.Value;
-        //        reference.Key.Namespace = reference.Value.Key;
-        //    }        
-        //}
     }
+    
+    public partial class RenameMapVisitor : NullAssemblyVisitor  
+    {       
+
+        public override void VisitEventReference(Mono.Cecil.EventReference @event)
+        {
+            MapReference(@event);
+        }
+
+
+        public override void VisitFieldReference(Mono.Cecil.FieldReference field)
+        {
+            MapReference(field);
+        }
+
+        public override void VisitMethodReference(Mono.Cecil.MethodReference method)
+        {
+            MapReference(method);
+        }
+
+        public override void VisitPropertyReference(Mono.Cecil.PropertyReference property)
+        {
+            MapReference(property);
+        }
+
+        public override void VisitTypeReference(Mono.Cecil.TypeReference type)
+        {
+            MapReference(type);
+        }
+
+        private void MapReference(MemberReference reference)
+        {
+            _renamer.MapReference(reference);
+        } 
+
+    
 }
 

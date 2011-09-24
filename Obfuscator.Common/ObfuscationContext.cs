@@ -45,12 +45,12 @@ namespace Obfuscator
             private set;
         }
 
-        public Dictionary<AssemblyNameDefinition,
-            Dictionary<MemberReference, string>> ReferencesRenameMap
-        {
-            get;
-            private set;
-        }
+        //public Dictionary<AssemblyNameDefinition,
+        //    Dictionary<MemberReference, string>> ReferencesRenameMap
+        //{
+        //    get;
+        //    private set;
+        //}
 
         public ObfuscationContext(InputConfiguration configuraiton, ObfuscationOptions options)        
         {
@@ -59,7 +59,7 @@ namespace Obfuscator
 
             DefinitionsRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<IMemberDefinition, string>>();
             ResourcesRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<Resource, string>>();
-            ReferencesRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<MemberReference, string>>();
+     //       ReferencesRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<MemberReference, string>>();
         }
 
         ////Pipeline _pipeline;

@@ -26,14 +26,6 @@ namespace Obfuscator.Renaming
             get;
             private set;
         }
-
-        //TODO: Should save references with respect to the referenced member definition assembly
-        public Dictionary<MemberReference, string> References
-        {
-            get;
-            private set;
-        }
-
       
         public Renamer(IStringGenerator nameGenerator, ObfuscationOptions options)
         {
@@ -42,9 +34,7 @@ namespace Obfuscator.Renaming
             _options = options;
 
             DefinitionsMap = new Dictionary<IMemberDefinition, string>();
-            ResourcesNames = new Dictionary<Resource, string>();
-
-            References = new Dictionary<MemberReference, string>();
+            ResourcesNames = new Dictionary<Resource, string>();            
         }
 
         public string MapDefinition(IMemberDefinition member)
@@ -54,29 +44,15 @@ namespace Obfuscator.Renaming
             return MapTypeDefinition(member as TypeDefinition);
         }
 
-        public void MapReference(MemberReference reference)
-        {
-            if (References.ContainsKey(reference))
-                return;
-
-            IMetadataScope scope;
-            scope = GetScope(reference);
-
-            if (Helper.IsCoreAssemblyName(scope.Name))
-                return;
-
-            References.Add(reference, String.Empty);
-        }
-
-        private static IMetadataScope GetScope(MemberReference reference)
-        {
-            IMetadataScope scope;
-            if (reference.DeclaringType == null)
-                scope = ((TypeReference)reference).Scope;
-            else
-                scope = reference.DeclaringType.Scope;
-            return scope;
-        }
+        //private static IMetadataScope GetScope(MemberReference reference)
+        //{
+        //    IMetadataScope scope;
+        //    if (reference.DeclaringType == null)
+        //        scope = ((TypeReference)reference).Scope;
+        //    else
+        //        scope = reference.DeclaringType.Scope;
+        //    return scope;
+        //}
 
         public string MapResource(Resource resource)
         {
@@ -94,6 +70,16 @@ namespace Obfuscator.Renaming
                 return newName;
             }
             return resource.Name;
+        }
+
+        public bool TryGetMappedName(IMemberDefinition member, out string name)
+        {
+            return DefinitionsMap.TryGetValue(member, out name);
+        }
+
+        public bool TryGetMappedName(Resource resource, out string name)
+        {
+            return ResourcesNames.TryGetValue(resource, out name);
         }
 
         //TODO Same fully-qualified type names in two assemblies http://msdn.microsoft.com/en-us/library/ms173212.aspx
@@ -122,16 +108,6 @@ namespace Obfuscator.Renaming
             DefinitionsMap[type] = newName;
             return newName;
 #endif
-        }
-
-        public bool TryGetMappedName(IMemberDefinition member, out string name)
-        {
-            return DefinitionsMap.TryGetValue(member, out name);
-        }
-
-        public bool TryGetMappedName(Resource resource, out string name)
-        {
-            return ResourcesNames.TryGetValue(resource, out name);
         }
    
         private IMemberDefinition GetMappedMember(string memberName)

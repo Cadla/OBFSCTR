@@ -26,16 +26,17 @@ namespace Obfuscator.Steps.Reflection
                 "GetMethod",
                 "GetNestedType",
                 "GetProperty",
-                "GetType"
+                "GetType",
+                //"CreateInstance"
             };
         }
 
         static bool IsSupported(MethodReference method)
         {
-            if (method.DeclaringType.FullName != "System.Type")
+            if (method.DeclaringType.FullName != "System.Type" && method.DeclaringType.FullName != "System.Reflection.Assembly")
                 return false;
 
-            if (!method.HasParameters || method.Parameters.Count > 2)
+            if (!method.HasParameters /*|| method.Parameters.Count > 2*/)
                 return false;
 
             return true;
@@ -49,7 +50,7 @@ namespace Obfuscator.Steps.Reflection
             if (method.Name != "GetType")
                 return false;
 
-            if (method.Parameters.Count == 1 && method.Parameters[0].ParameterType.FullName == "System.String")
+            if (/*method.Parameters.Count == 1 &&*/ method.Parameters[0].ParameterType.FullName == "System.String")
                 return true;
 
             return false;

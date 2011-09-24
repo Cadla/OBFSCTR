@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;APPEND</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;APPEND;BODY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -43,19 +43,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CTSNameGenerator.cs" />
-    <Compile Include="INameGenerator.cs" />
+    <Compile Include="NameGenerators\CTSNameGenerator.cs" />
+    <Compile Include="NameGenerators\INameGenerator.cs" />
+    <Compile Include="ReferenceVisitor.cs" />
     <Compile Include="Renamer.cs" />
     <Compile Include="Steps\BuildRenameMapStep.cs" />
+    <Compile Include="Steps\RenameDefinitionsStep.cs" />
     <Compile Include="Steps\FillOverrideTablesStep.cs" />
-    <Compile Include="Steps\RenameStep.cs" />
-    <Compile Include="Steps\FixReferencesStep.cs" />
-    <Compile Include="CLSNameGenerator.cs" />
-    <Compile Include="StringGenerator.cs" />
+    <Compile Include="Steps\RenameReferencesStep.cs" />
+    <Compile Include="NameGenerators\CLSNameGenerator.cs" />
+    <Compile Include="NameGenerators\StringGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameMapVisitor.cs" />
     <Compile Include="Logging\RenameMapVisitor.logging.cs" />
-    <Compile Include="Steps\TypeMapStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Obfuscator.Common\Obfuscator.Common.csproj">

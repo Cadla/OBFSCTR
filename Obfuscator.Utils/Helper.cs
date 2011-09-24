@@ -26,8 +26,10 @@ namespace Obfuscator.Utils
                 case "mscorlib":
                 case "Accessibility":
                 case "CommonLanguageRuntimeLibrary":
+                case "WindowsBase":
                 case "Mono.Security":
                     return true;
+
                 default:
                     return name.StartsWith("System")
                         || name.StartsWith("Microsoft");

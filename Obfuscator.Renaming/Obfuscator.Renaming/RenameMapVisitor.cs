@@ -16,7 +16,7 @@ namespace Obfuscator.Renaming
         public RenameMapVisitor(Renamer renamer, IFilter filter)
         {
             _renamer = renamer;
-            _filter = filter;
+            _filter = filter;            
         }
 
         public override VisitorLevel Level()
@@ -68,7 +68,7 @@ namespace Obfuscator.Renaming
             logVisitingMember(property);
             RenameDefinition(property);
         }
-
+#if BODY
         public override void VisitParameterDefinition(ParameterDefinition parameter)
         {
             parameter.Name = String.Empty;
@@ -80,98 +80,13 @@ namespace Obfuscator.Renaming
         {
             variable.Name = String.Empty;
         }
-
-        //public override void VisitInstruction(Instruction instruction)
-        //{
-        //    if (instruction.OpCode == OpCodes.Ldstr)
-        //    {
-        //        _renamer.MapInstruction(instruction);
-        //    }
-        //}        
+#endif
 
         public override void VisitResource(Resource resource)
         {
             var newName = _renamer.MapResource(resource);
             logRenamingResource(resource, newName);
         }
-
-
-
-        public override void VisitEventReference(Mono.Cecil.EventReference @event)
-        {
-            RenameReference(@event);
-
-            //IMemberDefinition definition = @event.Resolve();
-            //var assemblyName = GetAssemblyName(definition);
-
-            //if (Visited(@event, assemblyName))
-            //    return;
-
-            //ResolvedMembers[@event] = definition;
-            //Visit(@event, assemblyName);
-        }
-
-
-        public override void VisitFieldReference(Mono.Cecil.FieldReference field)
-        {
-            RenameReference(field);
-
-            //IMemberDefinition definition = field.Resolve();
-            //var assemblyName = GetAssemblyName(definition);
-
-            //if (Visited(field, assemblyName))
-            //    return;
-
-            //ResolvedMembers[field] = definition;
-            //Visit(field, assemblyName);
-        }
-
-        public override void VisitMethodReference(Mono.Cecil.MethodReference method)
-        {
-            RenameReference(method);
-
-            //IMemberDefinition definition = method.Resolve();
-            //var assemblyName = GetAssemblyName(definition);
-
-            //if (Visited(method, assemblyName))
-            //    return;
-
-            //ResolvedMembers[method] = definition;
-            //Visit(method, assemblyName);
-        }
-
-        public override void VisitPropertyReference(Mono.Cecil.PropertyReference property)
-        {
-            RenameReference(property);
-
-            //IMemberDefinition definition = property.Resolve();
-            //var assemblyName = GetAssemblyName(definition);
-
-            //if (Visited(property, assemblyName))
-            //    return;
-
-            //ResolvedMembers[property] = definition;
-            //Visit(property, assemblyName);
-        }
-
-        public override void VisitTypeReference(Mono.Cecil.TypeReference type)
-        {
-            RenameReference(type);
-
-            //IMemberDefinition definition = type.Resolve();
-            //var assemblyName = GetAssemblyName(definition);
-
-            //if (Visited(type, assemblyName))
-            //    return;
-
-            //ResolvedMembers[type] = definition;
-            //Visit(type, assemblyName);
-        }
-
-        private void RenameReference(MemberReference reference)
-        {
-            _renamer.MapReference(reference);
-        } 
 
         private void RenameDefinition(IMemberDefinition definition)
         {

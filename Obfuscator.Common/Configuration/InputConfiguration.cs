@@ -58,10 +58,10 @@ namespace Obfuscator.Configuration
         //    return InvokedByName(new Method(method), out nameIndex, out typeInstanceIndex);
         //}
         
-        bool IFilter.ShouldKeepNamespaces(AssemblyDefinition assembly)
-        {
-            return ShouldKeepNamespacess(new Assembly(assembly));
-        }
+        //bool IFilter.ShouldKeepNamespaces(AssemblyDefinition assembly)
+        //{
+        //    return ShouldKeepNamespacess(new Assembly(assembly));
+        //}
 
         bool IFilter.ShouldSkip(IMemberDefinition member)
         {
@@ -140,6 +140,28 @@ namespace Obfuscator.Configuration
             if(name == "mscorlib")
                 return _resolver.Resolve(new AssemblyNameReference(name, new Version()), new ReaderParameters{ReadSymbols = false});
             return _resolver.Resolve(new AssemblyNameReference(name, new Version()), _readerParameters);
+        }
+
+        public AssemblyDefinition Resolve(AssemblyNameReference assembly)
+        {
+            //if (File.Exists(name))
+            //{
+            //    AssemblyDefinition assemblyDefinition;
+            //    if(name.Contains("mscorlib"))
+            //        assemblyDefinition = AssemblyDefinition.ReadAssembly(name, new ReaderParameters() {ReadSymbols = false});
+            //    else
+            //        assemblyDefinition = AssemblyDefinition.ReadAssembly(name, _readerParameters);
+
+            //    if(_resolver.Resolve(assemblyDefinition.Name, _readerParameters))
+
+            //    _resolver.CacheAssembly(assemblyDefinition);
+            //    return assemblyDefinition;
+            //}
+
+            var parameters = _readerParameters;
+            if (assembly.Name == "mscorlib")
+                parameters = new ReaderParameters() { ReadSymbols = false };
+            return _resolver.Resolve(assembly, _readerParameters);
         }
     }
 }
