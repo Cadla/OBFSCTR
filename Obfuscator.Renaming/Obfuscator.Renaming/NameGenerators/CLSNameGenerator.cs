@@ -10,51 +10,106 @@ namespace Obfuscator.Renaming
     public class CLSNameGenerator : INameGenerator
     {
         IStringGenerator _nameGenerator;
-        IDictionary<string, string> _scopeLastNameDictionary;        
+        IDictionary<string, string> _scopeLastNameDictionary = new Dictionary<string, string>();
+        IDictionary<TypeDefinition, string> _typeDefinitionNmaes = new Dictionary<TypeDefinition, string>();
 
-        public bool CLSCompliance { get; private set; }
-        public bool KeepNamespaces { get; set; }
+        // <typeScopeId, <methodParametersString, lastName>>
+        IDictionary<string, Dictionary<string, List<string>>> _scopedMethodSignatures = new Dictionary<string, Dictionary<string, List<string>>>();
 
-        public CLSNameGenerator(IStringGenerator nameGenerator, bool clsCompliant, bool keepNamespaces)
-        {
-            _scopeLastNameDictionary = new Dictionary<string, string>();            
+        public bool KeepNamespaces { get; private set; }
+
+        public CLSNameGenerator(IStringGenerator nameGenerator, bool keepNamespaces)
+        {            
             _nameGenerator = nameGenerator;
-            CLSCompliance = clsCompliant;
             KeepNamespaces = keepNamespaces;
         }
 
         // LOOKUP Path.GetRandomFileName BaseBMethod        
         public string GetMemberName(IMemberDefinition member)
         {
-            //Debug.Assert(member.DeclaringType != null);
-            
-            //string scopeId, newName;            
-            ////if (CLSCompliance)
-            ////{
-            ////    scopeId = GetCLSMemberScope(member);
-            ////    newName = GetNextName(scopeId);
-            ////    while (newName == declaringTypeName)
-            ////        newName = GetNextName(scopeId);
-            ////}
-            ////else
-            ////{
-            ////    scopeId = GetCTSMemberScope(member);
-            ////    newName = GetNextName(scopeId);
-            ////}            
-            //return newName + x++;
-            return string.Empty;
+            if (member.DeclaringType == null)
+                return GetTypeName((TypeDefinition)member);
+         
+            var declaringTypeName = GetDeclaringTypeName(member.DeclaringType);
+            string newName;
+            do{
+                newName = NewMethod(member);
+            }
+            while(newName == declaringTypeName);
+
+            //_scopedMemberNames[declaringTypeScope] = newName;
+            return newName;
         }
 
-        public int x = 0;
+        //TODO: Clean up! Refactor!
+        private string NewMethod(IMemberDefinition member)
+        {
+            string newName = null;
+            var declaringTypeScope = GetDeclaringTypeScope(member.DeclaringType);
+            if (member.MetadataToken.TokenType != TokenType.Method)
+            {
+                newName = GetNextName(declaringTypeScope);
+            }
+            else
+            {
+                var methodParametersString = GetMethodParametersString((MethodReference)member);
+                if (!_scopedMethodSignatures.ContainsKey(declaringTypeScope))
+                {
+                    newName = GetNextName(declaringTypeScope);
+                    _scopedMethodSignatures[declaringTypeScope] = new Dictionary<string, List<string>>()
+                    {
+                        {methodParametersString, new List<string>() {newName}}
+                    };
+                }
+                else
+                {
+                    foreach (var method in _scopedMethodSignatures[declaringTypeScope])
+                    {
+                        if (methodParametersString != method.Key)
+                        {
+                            List<string> forbidenNames;
+
+                            if (_scopedMethodSignatures[declaringTypeScope].TryGetValue(methodParametersString, out forbidenNames))
+                            {
+                                foreach (var name in method.Value)
+                                    if (!forbidenNames.Contains(name))
+                                    {
+                                        newName = name;
+                                        break;
+                                    }
+                            }
+                            else
+                                newName = method.Value.First();
+
+                        }
+                    }
+
+                    if (newName == null)
+                        newName = GetNextName(declaringTypeScope);
+                    if (_scopedMethodSignatures[declaringTypeScope].ContainsKey(methodParametersString))
+                        _scopedMethodSignatures[declaringTypeScope][methodParametersString].Add(newName);
+                    else
+                        _scopedMethodSignatures[declaringTypeScope].Add(methodParametersString, new List<string>() { newName });
+                }
+            }
+            return newName;
+        }    
+        
         public string GetTypeName(TypeDefinition type)
         {
-            Debug.Assert(!type.IsNested);
+            if (type.IsNested)
+                return GetMemberName(type);
 
             var scopeId = GetTypeScope(type);
-            if (KeepNamespaces)
-                return GetNextName(scopeId + "." + type.Namespace);
-            else
-                return GetNextName(scopeId);            
+            return _typeDefinitionNmaes[type] = GetNextName(scopeId);            
+        }
+
+        private string GetDeclaringTypeName(TypeDefinition typeDefinition)
+        {
+            string result;
+            if (!_typeDefinitionNmaes.TryGetValue(typeDefinition, out result))
+                result = GetTypeName(typeDefinition);
+            return result;
         }
 
         private string GetNextName(string scopeId)
@@ -72,63 +127,21 @@ namespace Obfuscator.Renaming
             _scopeLastNameDictionary[scopeId] = nextName;
             return nextName;
         }
-        
+
         private string GetTypeScope(TypeDefinition type)
         {
-            return type.Scope.Name;
-        }
-
-        private string GetCTSMemberScope(IMemberDefinition member)
-        {            
-            StringBuilder scope = new StringBuilder();
-            TypeDefinition declaringType = member.DeclaringType;
-
-            char separator;
-            if (declaringType.IsNested)
-            {
-                scope.Append(GetCTSMemberScope(declaringType));
-                separator = '/';
-            }
+            if (KeepNamespaces)
+                return type.Scope.ToString() + "::" + type.Namespace;
             else
-            {
-                scope.Append(GetTypeScope(declaringType));
-                separator = '.';
-            }
-
-            scope.Append(separator);
-            scope.Append(declaringType.Name);
-            scope.Append("::");
-            scope.Append(member.MetadataToken.TokenType.ToString());
-
-            MethodDefinition method = member as MethodDefinition;
-            if (method != null)
-                scope.Append(GetMethodParametersString(method));
-
-            return scope.ToString();
+                return type.Scope.ToString() + "::";
         }
-
-        private string GetCLSMemberScope(IMemberDefinition member)
+        
+        private string GetDeclaringTypeScope(TypeDefinition declaringType)
         {
-            var ctsScope = GetCTSMemberScope(member);
-            if (member is TypeDefinition || member is MethodDefinition)
-                return ctsScope;
-
-            StringBuilder scope = new StringBuilder(ctsScope);
-
-            scope.Append("::");
-            FieldDefinition field = member as FieldDefinition;
-            if (field != null)
-                scope.Append(field.FieldType.FullName);
-
-            PropertyDefinition property = member as PropertyDefinition;
-            if (property != null)
-                scope.Append(property.PropertyType.FullName);
-
-            EventDefinition @event = member as EventDefinition;
-            if (@event != null)
-                scope.Append(@event.EventType.FullName);
-
-            return scope.ToString();
+            if (declaringType.IsNested)
+                return GetDeclaringTypeScope(declaringType.DeclaringType) + '/' + declaringType.Name;
+            else
+                return GetTypeScope(declaringType) + '.' + declaringType.Name;
         }
 
         private string GetMethodParametersString(MethodReference method)

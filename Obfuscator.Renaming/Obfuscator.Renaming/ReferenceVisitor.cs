@@ -9,50 +9,47 @@ namespace Obfuscator.Renaming
 {
     public class ReferenceVisitor :  NullAssemblyVisitor
     {       
-        private ReferenceResolver _referenceResolver;
         private Dictionary<AssemblyNameReference, List<MemberReference>> _references;
 
-        public ReferenceVisitor(ReferenceResolver resolver, ref Dictionary<AssemblyNameReference, List<MemberReference>> references)
+        public ReferenceVisitor(ref Dictionary<AssemblyNameReference, List<MemberReference>> references)
         {
             _references = references;
-
-            _referenceResolver = resolver;
-            _referenceResolver.Action = reference => { 
-                MapReference(GetAssemblyNameReference(reference.Scope), reference);
-                return reference; 
-            };
         }
 
-        //public override void VisitEventReference(EventReference @event)
-        //{
-       
-        //}
+        public override void VisitEventReference(EventReference @event)
+        {
+            var eventReference = @event;
+            var scope = GetAssemblyNameReference(eventReference.DeclaringType.Scope);
+            MapReference(scope, eventReference);
+        }
         
         public override void VisitFieldReference(FieldReference field)
         {
-            var fieldReference = field;// _referenceResolver.ReferenceField(field);
+            var fieldReference = field;
             var scope = GetAssemblyNameReference(fieldReference.DeclaringType.Scope);
             MapReference(scope, fieldReference);
         }
 
         public override void VisitMethodReference(MethodReference method)
         {
-            var methodReference = method;// _referenceResolver.ReferenceMethod(method);
+            var methodReference = method;
             var scope = GetAssemblyNameReference(method.DeclaringType.Scope);
             MapReference(scope, methodReference);
         }
 
-        //public override void VisitPropertyReference(PropertyReference property)
-        //{
-       
-        //}
+        public override void VisitPropertyReference(PropertyReference property)
+        {
+            var propertyReference = property;
+            var scope = GetAssemblyNameReference(propertyReference.DeclaringType.Scope);
+            MapReference(scope, propertyReference);
+        }
 
         public override void VisitTypeReference(TypeReference type)
         {
             if (type.GetElementType() is GenericParameter)
                 return;
 
-            var typeReference = type;// _referenceResolver.ReferenceType(type, type.DeclaringType);
+            var typeReference = type;
             var scope = GetAssemblyNameReference(type.Scope);            
             MapReference(scope, typeReference);
         }

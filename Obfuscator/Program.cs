@@ -12,9 +12,14 @@ namespace Obfuscator
 {
     public class Options
     {        
-        [Option("p", "path", Required=false, HelpText="Input assembly path")]
-        public string AssemblyPath;
+        [Option("m", "renameMaps", Required=false)]
+        public bool InsertRenameMaps = false;
 
+        [Option("c", "ctscompliance", Required=false)]
+        public bool CTSCompliance = false;
+
+        [Option("n", "namespaces", Required=false)]
+        public bool KeepNamespaces = false;
 
         [OptionArray("a", "assembly", Required = true, HelpText = "Input assembly name")]
         public string[] AssemblyNames;
@@ -46,28 +51,38 @@ namespace Obfuscator
                     configuration.AddAssembly(assembly);
                 }
 
-                ObfuscationContext context = new ObfuscationContext(configuration, ObfuscationOptions.CLSCompliance | ObfuscationOptions.KeepNamespaces);
+                ObfuscationContext context = new ObfuscationContext(configuration, GetObfuscationOptions(options));
                 
                 context.OutputDirectory = OUTPUT;
                 
-                Pipeline p = GetStandardPipeline();                
+                Pipeline p = GetStandardPipeline();
+                if (options.InsertRenameMaps)
+                    p.AddStepAfter(typeof(BuildRenameMapStep), new ReplaceReflectionMethodsParameters());                    
+
                 p.Process(context);              
                 System.Console.ReadKey();
             }
         }
 
+        private static ObfuscationOptions GetObfuscationOptions(Options options)
+        {
+            ObfuscationOptions result = ObfuscationOptions.Default;
+            if(options.CTSCompliance)
+                result |= ObfuscationOptions.CTSCompliance;
+            if (options.InsertRenameMaps)
+                result &= ~ObfuscationOptions.CTSCompliance;
+            if (options.KeepNamespaces)
+                result |= ObfuscationOptions.KeepNamespaces;
+            return result;
+        }
+
         static Pipeline GetStandardPipeline()
         {
-            Pipeline p = new Pipeline();
-            //p.AppendStep(new ConverterStep());
-            //p.AppendStep(new TypeMapStep());
+            Pipeline p = new Pipeline();            
             p.AppendStep(new FillOverrideTables());
             p.AppendStep(new BuildRenameMapStep());
-            //p.AppendStep(new FixVirtualMethodsNames());
-            //p.AppendStep(new FixReferencesStep());            
             p.AppendStep(new RenameReferencesStep());
-            p.AppendStep(new RenameDefinitionsStep());
-            p.AppendStep(new ReplaceMemberNameStringsStep());
+            p.AppendStep(new RenameDefinitionsStep());         
             p.AppendStep(new OutputStep());
             return p;
         }

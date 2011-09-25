@@ -29,7 +29,10 @@ namespace Obfuscator.Renaming
       
         public Renamer(IStringGenerator nameGenerator, ObfuscationOptions options)
         {
-            _scopeNameGenerator = new CTSNameGenerator(nameGenerator, options.HasFlag(ObfuscationOptions.KeepNamespaces));
+            if(options.HasFlag(ObfuscationOptions.CTSCompliance))
+                _scopeNameGenerator = new CTSNameGenerator(nameGenerator, options.HasFlag(ObfuscationOptions.KeepNamespaces));
+            else 
+                _scopeNameGenerator = new CLSNameGenerator(nameGenerator, options.HasFlag(ObfuscationOptions.KeepNamespaces));
 
             _options = options;
 

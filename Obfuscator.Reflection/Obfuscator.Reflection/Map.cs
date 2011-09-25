@@ -8,6 +8,7 @@ using Obfuscator.Utils;
 using Mono.Cecil.Cil;
 using Obfuscator.MetadataBuilder.Extensions;
 using Obfuscator;
+using System.Reflection;
 
 namespace Obfuscator.Reflection
 {
@@ -29,6 +30,17 @@ namespace Obfuscator.Reflection
             return GetName(typeFullName, GetMd5Hash(typeFullName));
 #else
             return GetName(typeFullName, typeFullName);
+#endif
+        }
+
+        public static string GetTypeFromAssembly(Assembly assembly, string typeFullName)
+        {
+            var mapName = typeof(Map).FullName;
+            var method = assembly.GetType(mapName).GetMethod("GetType", new Type[] { typeof(string) });            
+#if HASH
+            return method.Invoke(null, new object[] { typeFullName }) as string;
+#else
+            return method.Invoke(null, new object[] { typeFullName }) as string;
 #endif
         }
 

@@ -32,6 +32,10 @@ namespace ConsoleApplication2
                     Console.WriteLine("Nested Nested MethodZ");
                 }
 
+                public void MethodX(ClassY y)
+                {
+                    y.MethodZ();
+                }
             }
             
             public void MethodZ()
@@ -98,12 +102,13 @@ namespace ConsoleApplication2
             var ny = typeof(ClassY.ClassNested).GetMethod("Method" + "Z", Type.EmptyTypes);
             var ny2 = Type.GetType("ConsoleApplication2.ClassY").GetNestedType("ClassNested").GetMethod("Method" + "Z", Type.EmptyTypes);
             var nyny = typeof(ClassY.ClassNested.ClassNestedNested).GetMethod("Method" + "Z", Type.EmptyTypes);
+            var nynyx = typeof(ClassY.ClassNested.ClassNestedNested).GetMethod("MethodX", new Type[] { typeof(ClassY) });
             var nyny2 = typeof(ClassY).GetNestedType("ClassNested").GetNestedType("ClassNestedNested").GetMethod("Method" + "Z", Type.EmptyTypes);
             ny.Invoke(NY, null);
             ny2.Invoke(NY, null);
             nyny.Invoke(NYNY, null);
             nyny2.Invoke(NYNY, null);
-
+            nynyx.Invoke(NYNY, new object[] { y });
             //var generic = y.GetType().GetMethod("GenericMethod");
             //generic.MakeGenericMethod(new Type[] { typeof(string) });
             //generic.Invoke(y, new string[] { "abcd"});
@@ -113,7 +118,7 @@ namespace ConsoleApplication2
             var xmp = x.GetType().GetMethod(ClassY.MethodZ("Z"), (array = new Type[] { typeof(int) }));
             xmp.Invoke(x, new object[] { 1 });
 
-            xmp = x.GetType().GetMethod("MethodZ", array);
+            xmp = x.GetType().GetMethod("MethodZ", new Type[] { typeof(int) });
             xmp.Invoke(x, new object[] { 1 });
 
             var ymp = y.GetType().GetMethod("MethodZ", new Type[] { typeof(int), typeof(int) });

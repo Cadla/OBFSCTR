@@ -260,10 +260,16 @@ namespace Obfuscator.Utils
 
             visitor_.VisitTypeReference(type);
 
-            VisitCollection(type.GenericParameters, VisitGenericParameter, () => type.HasGenericParameters);
-
             // TODO check weather necessary
             VisitTypeReference(type.DeclaringType);
+
+            if (type.MetadataToken.TokenType == TokenType.TypeSpec)
+            {
+                VisitTypeSpecification((TypeSpecification)type);
+                return;
+            }
+
+            VisitCollection(type.GenericParameters, VisitGenericParameter, () => type.HasGenericParameters);            
         }
 
         private void VisitFieldReference(FieldReference field)
@@ -293,7 +299,7 @@ namespace Obfuscator.Utils
             VisitTypeReference(method.DeclaringType);
 
             VisitTypeReference(method.ReturnType);
-
+                        
             VisitCollection(method.GenericParameters, VisitGenericParameter, () => method.HasGenericParameters);
 
             VisitCollection(method.Parameters, VisitParameterDefinition, () => method.HasParameters);
@@ -301,6 +307,31 @@ namespace Obfuscator.Utils
             // TODO method.HasSecurity - security attributes 
 
             VisitMethodReturnType(method.MethodReturnType);
+
+            if (method.IsGenericInstance)
+                ReferenceGenericInstanceMethodArguments((GenericInstanceMethod)method);
+        }
+
+        private void ReferenceGenericInstanceMethodArguments(GenericInstanceMethod genericInstanceMethod)
+        {
+            foreach (var argument in genericInstanceMethod.GenericArguments)
+                VisitTypeReference(argument);
+        }
+
+        private void VisitTypeSpecification(TypeSpecification type)
+        {
+            if (type.IsRequiredModifier)
+                VisitTypeReference(((RequiredModifierType)type).ModifierType);
+            else if (type.IsGenericInstance)
+                VisitGenericInstanceType((GenericInstanceType)type);
+            VisitTypeReference(type.ElementType);
+        }
+
+        private void VisitGenericInstanceType(GenericInstanceType genericInstanceType)
+        {
+            foreach (var argument in genericInstanceType.GenericArguments)
+                VisitTypeReference(argument);
+
         }
 
         private void VisitAssemblyReference(AssemblyNameReference reference)

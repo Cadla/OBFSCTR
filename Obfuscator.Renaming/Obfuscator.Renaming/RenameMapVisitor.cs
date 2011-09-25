@@ -57,7 +57,7 @@ namespace Obfuscator.Renaming
                 return;
 
             logVisitingMember(@event);
-            RenameDefinition(@event);
+            //RenameDefinition(@event);
         }
 
         public override void VisitPropertyDefinition(Mono.Cecil.PropertyDefinition property)
@@ -66,7 +66,7 @@ namespace Obfuscator.Renaming
                 return;
 
             logVisitingMember(property);
-            RenameDefinition(property);
+            //RenameDefinition(property);
         }
 #if BODY
         public override void VisitParameterDefinition(ParameterDefinition parameter)

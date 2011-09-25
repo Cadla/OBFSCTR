@@ -49,7 +49,7 @@
     <Compile Include="Map.cs" />
     <Compile Include="MapInjector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Steps\ReplaceMemberNameStringsStep.cs" />
+    <Compile Include="Steps\ReplaceReflectionMethodsParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Obfuscator.Common\Obfuscator.Common.csproj">

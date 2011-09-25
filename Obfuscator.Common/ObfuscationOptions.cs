@@ -10,6 +10,6 @@ namespace Obfuscator
     {
         Default,
         KeepNamespaces,
-        CLSCompliance
+        CTSCompliance
     }
 }

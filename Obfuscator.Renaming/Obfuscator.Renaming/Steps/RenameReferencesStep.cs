@@ -16,9 +16,8 @@ namespace Obfuscator.Steps.Renaming
         List<KeyValuePair<MemberReference, string>> toRename = new List<KeyValuePair<MemberReference, string>>();
 
         protected override void ProcessAssembly(AssemblyDefinition assembly)
-        {
-            var resolver = ReferenceResolver.GetDefaultResolver(assembly.MainModule);
-            ReferenceVisitor collectReferences = new ReferenceVisitor(resolver, ref _assemblyReferences);
+        { 
+            ReferenceVisitor collectReferences = new ReferenceVisitor(ref _assemblyReferences);
             _visitor.ConductVisit(assembly, collectReferences);
         }
 
@@ -37,7 +36,7 @@ namespace Obfuscator.Steps.Renaming
                     //TODO: !!! zmienić !!!
                     IMemberDefinition referenceDefinition = ((dynamic)reference).Resolve();
                     string newName;
-                    if (renameMap.TryGetValue(referenceDefinition, out newName))
+                    if (referenceDefinition != null && renameMap.TryGetValue(referenceDefinition, out newName))
                         toRename.Add(new KeyValuePair<MemberReference, string>(reference, newName));                        
                 }
             }
