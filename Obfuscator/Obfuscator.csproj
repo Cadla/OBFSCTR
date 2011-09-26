@@ -46,9 +46,9 @@
     <Compile Include="Pipeline.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Steps\ConverterStep.cs" />
     <Compile Include="Steps\OutputStep.cs" />
     <Compile Include="Steps\RenameMapVisitor.cs" />
+    <Compile Include="Steps\SaveRenameMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Obfuscator.Common\Obfuscator.Common.csproj">

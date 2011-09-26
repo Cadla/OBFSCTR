@@ -24,17 +24,19 @@ namespace Obfuscator
         [OptionArray("a", "assembly", Required = true, HelpText = "Input assembly name")]
         public string[] AssemblyNames;
 
-        [OptionArray("r", "referencingAssembly", Required = false, HelpText = "Referencing assembly names")]
-        public string[] ReferencingAssemblyNames;
+        [Option("i", "inputDir", Required = true, HelpText = "Directory containing input assemblies")]
+        public string InputDir;
+
+        [Option("o", "outputDir", Required = true, HelpText = "Output directory")]
+        public string OutputDir;
+
+        //[OptionArray("r", "referencingAssembly", Required = false, HelpText = "Referencing assembly names")]
+        //public string[] ReferencingAssemblyNames;
     }
 
 
     public class Program
-    {
-        public const string TEST_LIBRARIES = @"D:\Magisterka-nowy\Obfuscator\TestLibraries\bin\";
-        public const string NOT_NECESSARY = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client";
-        public const string OUTPUT = @"D:\Magisterka-nowy\Obfuscator\TestLibraries\output\";
-
+    {      
         static void Main(string[] args)
         {
             var options = new Options();
@@ -43,9 +45,8 @@ namespace Obfuscator
             {
                 DefaultConfiguration configuration = new DefaultConfiguration();
 
-                configuration.AddSearchDirectory(TEST_LIBRARIES);
-                configuration.AddSearchDirectory(NOT_NECESSARY);
-                                
+                configuration.AddSearchDirectory(options.InputDir);
+                                       
                 foreach (var assembly in options.AssemblyNames)
                 {
                     configuration.AddAssembly(assembly);
@@ -53,7 +54,7 @@ namespace Obfuscator
 
                 ObfuscationContext context = new ObfuscationContext(configuration, GetObfuscationOptions(options));
                 
-                context.OutputDirectory = OUTPUT;
+                context.OutputDirectory = options.OutputDir;
                 
                 Pipeline p = GetStandardPipeline();
                 if (options.InsertRenameMaps)
@@ -62,6 +63,7 @@ namespace Obfuscator
                 p.Process(context);              
                 System.Console.ReadKey();
             }
+            
         }
 
         private static ObfuscationOptions GetObfuscationOptions(Options options)
@@ -81,6 +83,7 @@ namespace Obfuscator
             Pipeline p = new Pipeline();            
             p.AppendStep(new FillOverrideTables());
             p.AppendStep(new BuildRenameMapStep());
+            p.AppendStep(new SaveRenameMap());
             p.AppendStep(new RenameReferencesStep());
             p.AppendStep(new RenameDefinitionsStep());         
             p.AppendStep(new OutputStep());

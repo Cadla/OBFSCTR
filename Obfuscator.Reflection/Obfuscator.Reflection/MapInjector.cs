@@ -65,8 +65,8 @@ namespace Obfuscator.Reflection
             {
                 var member = entry.Key;
                 var newName = entry.Value;
-
-                Stack<Instruction> procedure;
+                
+                Stack<Instruction> procedure = new Stack<Instruction>();
                 if (member.DeclaringType != null)
                 {
                     string declaringTypeNewName = GetTypeNewName(renameData, member.DeclaringType);
@@ -74,16 +74,10 @@ namespace Obfuscator.Reflection
                     if (keepNamespaces)
                         declaringTypeNewName = member.DeclaringType.Namespace + '.' + declaringTypeNewName;
 
-                    if (member is MethodReference)
+                    if (member.MetadataToken.TokenType == TokenType.Method)
                         procedure = AddMemberWithParameters((MethodReference)member, newName, declaringTypeNewName, addMemberWithParameters, GetParametersString((MethodReference)member, renameData));
-                    else if (member is PropertyReference)
-                        procedure = AddMemberWithParameters((PropertyReference)member, newName, declaringTypeNewName, addMemberWithParameters, GetParametersString((PropertyReference)member, renameData));
-                    else
-                    {
+                    else if (member.MetadataToken.TokenType == TokenType.Field)
                         procedure = AddMember(member, newName, declaringTypeNewName, addMember);
-                        //if (member is TypeDefinition)
-                        //    AddNestedType((TypeDefinition)member, newName, declaringTypeNewName, addType, keepNamespaces);
-                    }
                 }
                 else
                     procedure = AddType((TypeDefinition)member, newName, addType, keepNamespaces);
@@ -172,24 +166,6 @@ namespace Obfuscator.Reflection
             return result;
         }
 
-        static Stack<Instruction> AddMemberWithParameters(PropertyReference property, string newName, string declaringTypeNewName,
-    MethodReference addMemberWithParameters, string parametersString)
-        {
-            var result = new Stack<Instruction>();
-            result.Push(Instruction.Create(OpCodes.Nop));
-            result.Push(Instruction.Create(OpCodes.Call, addMemberWithParameters));
-            result.Push(Instruction.Create(OpCodes.Ldstr, newName));
-            result.Push(Instruction.Create(OpCodes.Ldstr, parametersString));
-#if HASH
-            result.Push(Instruction.Create(OpCodes.Ldstr, Map.GetMd5Hash(property.Name)));
-#else
-            result.Push(Instruction.Create(OpCodes.Ldstr, property.Name));
-#endif
-            result.Push(Instruction.Create(OpCodes.Ldstr, declaringTypeNewName));
-            return result;
-
-        }
-
         static string GetParametersString(MethodReference method, IDictionary<IMemberDefinition, string> renameMap)
         {
             if (method.HasParameters)
@@ -200,28 +176,6 @@ namespace Obfuscator.Reflection
                 foreach (var type in method.Parameters)
                 {
                     if(type.ParameterType.IsGenericParameter)
-                        builder.Append(type.ParameterType.FullName);
-                    else
-                        builder.Append(GetTypeNewName(renameMap, type.ParameterType.Resolve()));
-                    builder.Append(',');
-                }
-                builder.Remove(builder.Length - 1, 1);
-                builder.Append(')');
-                return builder.ToString();
-            }
-            return "()";
-        }
-
-        static string GetParametersString(PropertyReference property, IDictionary<IMemberDefinition, string> renameMap)
-        {
-            if (property.Parameters.Count > 0)
-            {
-                StringBuilder builder = new StringBuilder();
-
-                builder.Append('(');
-                foreach (var type in property.Parameters)
-                {
-                    if (type.ParameterType.IsGenericParameter)
                         builder.Append(type.ParameterType.FullName);
                     else
                         builder.Append(GetTypeNewName(renameMap, type.ParameterType.Resolve()));

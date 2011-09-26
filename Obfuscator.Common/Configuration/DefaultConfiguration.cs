@@ -121,15 +121,15 @@ namespace Obfuscator.Configuration
         private void SetEntryPoints()
         {
             var skipList = new HashSet<Member>();
-            foreach (var assembly in Assemblies)
-            {
-                var types = Types(assembly);
-                foreach (var type in types)
-                {
-                    if (type.Name == "Settings" || type.FullName == "Gendarme.Framework.EngineDependencyAttribute" || type.Name == "IAssemblyRule")
-                        skipList.Add(type);                        
-                }
-            }
+            //foreach (var assembly in Assemblies)
+            //{
+            //    var types = Types(assembly);
+            //    foreach (var type in types)
+            //    {
+            //        if (type.Name == "Settings")
+            //            skipList.Add(type);                        
+            //    }
+            //}
             EntryPoints = skipList;
         }
      

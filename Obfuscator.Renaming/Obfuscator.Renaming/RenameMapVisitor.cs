@@ -57,7 +57,7 @@ namespace Obfuscator.Renaming
                 return;
 
             logVisitingMember(@event);
-            //RenameDefinition(@event);
+            RenameDefinition(@event);
         }
 
         public override void VisitPropertyDefinition(Mono.Cecil.PropertyDefinition property)
@@ -66,19 +66,21 @@ namespace Obfuscator.Renaming
                 return;
 
             logVisitingMember(property);
-            //RenameDefinition(property);
+            RenameDefinition(property);
         }
 #if BODY
         public override void VisitParameterDefinition(ParameterDefinition parameter)
         {
-            parameter.Name = String.Empty;
+            //parameter.Name = String.Empty;
+            parameter.Name = "a";
         }
 
         // Variable names don't matter for the runtime. They are being stored for readability.
         // In CIL variables are indexed accessed by location.
         public override void VisitVariableDefinition(VariableDefinition variable)
         {
-            variable.Name = String.Empty;
+            //variable.Name = String.Empty;
+            variable.Name = "a";
         }
 #endif
 
@@ -192,3 +194,4 @@ namespace Obfuscator.Renaming
         #endregion
     }
 }
+
