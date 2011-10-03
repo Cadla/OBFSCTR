@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;!GENERIC</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;GENERIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -44,6 +44,7 @@
     <Compile Include="AssemblyVisitor.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IAssemblyVisitor.cs" />
+    <Compile Include="MethodCallStackFrame.cs" />
     <Compile Include="NullAssemblyVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceResolver.cs" />

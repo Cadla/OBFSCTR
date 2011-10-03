@@ -85,7 +85,7 @@ namespace Obfuscator.Utils
 
             VisitCollection(type.Events, VisitEventDefinition, () => type.HasEvents);
 
-            VisitCollection(type.Methods, VisitMethodDefinition, () => type.HasMethods);
+            VisitCollection(type.Methods, VisitMethodDefinition, () => type.HasMethods);           
         }
 
     

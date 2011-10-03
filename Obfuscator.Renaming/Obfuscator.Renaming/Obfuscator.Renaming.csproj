@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;!APPEND;BODY</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;!APPEND;BODY;HASH</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -43,19 +43,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NameGenerators\CTSNameGenerator.cs" />
-    <Compile Include="NameGenerators\INameGenerator.cs" />
-    <Compile Include="ReferenceVisitor.cs" />
-    <Compile Include="Renamer.cs" />
-    <Compile Include="Steps\BuildRenameMapStep.cs" />
-    <Compile Include="Steps\RenameDefinitionsStep.cs" />
-    <Compile Include="Steps\FillOverrideTablesStep.cs" />
-    <Compile Include="Steps\RenameReferencesStep.cs" />
-    <Compile Include="NameGenerators\CLSNameGenerator.cs" />
-    <Compile Include="NameGenerators\StringGenerator.cs" />
+    <Compile Include="RenamingContext.cs" />
+    <Compile Include="Renaming\NameGenerators\CTSNameGenerator.cs" />
+    <Compile Include="Renaming\NameGenerators\INameGenerator.cs" />
+    <Compile Include="Reflection\Map.cs" />
+    <Compile Include="Reflection\MapInjector.cs" />
+    <Compile Include="Reflection\ReflectionMethodsHelper.cs" />
+    <Compile Include="ReflectionOptions.cs" />
+    <Compile Include="RenamingOptions.cs" />
+    <Compile Include="Renaming\Visitors\ReferencesMapVisitor.cs" />
+    <Compile Include="Renaming\Renamer.cs" />
+    <Compile Include="Renaming\Steps\BuildRenameMapStep.cs" />
+    <Compile Include="Reflection\Steps\InjectReflectionMethodProxies.cs" />
+    <Compile Include="Renaming\Steps\RenameDefinitionsStep.cs" />
+    <Compile Include="Renaming\Steps\FillMethodImplTablesStep.cs" />
+    <Compile Include="Renaming\Steps\RenameReferencesStep.cs" />
+    <Compile Include="Renaming\NameGenerators\CLSNameGenerator.cs" />
+    <Compile Include="StringGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenameMapVisitor.cs" />
-    <Compile Include="Logging\RenameMapVisitor.logging.cs" />
+    <Compile Include="Renaming\Visitors\DefinitionsMapVisitor.cs" />
+    <Compile Include="Renaming\Visitors\RenameMapVisitor.logging.cs" />
+    <Compile Include="Steps\RenameStep.cs" />
+    <Compile Include="RenamingBaseStep.cs" />
+    <Compile Include="Renaming\Steps\SaveRenameMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Obfuscator.Common\Obfuscator.Common.csproj">

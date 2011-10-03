@@ -1,18 +1,19 @@
 ﻿using CommandLine;
 using Obfuscator.Configuration;
 using Obfuscator.Steps;
-using Obfuscator.Steps.Reflection;
-using Obfuscator.Steps.Renaming;
 using Obfuscator.Configuration.COM;
 using System.Collections.Generic;
-using Mono.Cecil;
-
+using Obfuscator.Renaming;
+using Obfuscator.Common.Configuration;
+using Obfuscator.Common;
+using Obfuscator.Renaming.Steps;
+using Obfuscator.Merger;
 
 namespace Obfuscator
 {
     public class Options
     {        
-        [Option("m", "renameMaps", Required=false)]
+        [Option("r", "reflection", Required=false)]
         public bool InsertRenameMaps = false;
 
         [Option("c", "ctscompliance", Required=false)]
@@ -20,6 +21,9 @@ namespace Obfuscator
 
         [Option("n", "namespaces", Required=false)]
         public bool KeepNamespaces = false;
+
+        [Option("m", "merge", Required = false)]
+        public bool Merge = false;
 
         [OptionArray("a", "assembly", Required = true, HelpText = "Input assembly name")]
         public string[] AssemblyNames;
@@ -34,7 +38,6 @@ namespace Obfuscator
         //public string[] ReferencingAssemblyNames;
     }
 
-
     public class Program
     {      
         static void Main(string[] args)
@@ -43,49 +46,45 @@ namespace Obfuscator
             ICommandLineParser parser = new CommandLineParser();
             if (parser.ParseArguments(args, options))
             {
-                DefaultConfiguration configuration = new DefaultConfiguration();
+                ObfuscationContext context = new ObfuscationContext();
+                context.AddSearchDirectory(options.InputDir);
+                context.OutputDirectory = options.OutputDir;
 
-                configuration.AddSearchDirectory(options.InputDir);
-                                       
                 foreach (var assembly in options.AssemblyNames)
                 {
-                    configuration.AddAssembly(assembly);
+                    context.AddAssembly(assembly);
                 }
-
-                ObfuscationContext context = new ObfuscationContext(configuration, GetObfuscationOptions(options));
-                
-                context.OutputDirectory = options.OutputDir;
-                
-                Pipeline p = GetStandardPipeline();
-                if (options.InsertRenameMaps)
-                    p.AddStepAfter(typeof(BuildRenameMapStep), new ReplaceReflectionMethodsParameters());                    
-
+                                
+                Pipeline p = GetPipeline(options);
+               
                 p.Process(context);              
                 System.Console.ReadKey();
-            }
-            
+            }            
         }
 
-        private static ObfuscationOptions GetObfuscationOptions(Options options)
+        private static RenamingOptions GetRenamignOptions(Options options)
         {
-            ObfuscationOptions result = ObfuscationOptions.Default;
+            RenamingOptions result = RenamingOptions.Default;
             if(options.CTSCompliance)
-                result |= ObfuscationOptions.CTSCompliance;
-            if (options.InsertRenameMaps)
-                result &= ~ObfuscationOptions.CTSCompliance;
+                result |= RenamingOptions.CTSCompliance;
             if (options.KeepNamespaces)
-                result |= ObfuscationOptions.KeepNamespaces;
+                result |= RenamingOptions.KeepNamespaces;
+            if (options.InsertRenameMaps)
+                result |= RenamingOptions.Reflection;            
             return result;
         }
 
-        static Pipeline GetStandardPipeline()
+        private static ReflectionOptions GetReflectionOptions(Options options)
+        {            
+            return ReflectionOptions.Types;                                            
+        }
+
+        static Pipeline GetPipeline(Options options)
         {
-            Pipeline p = new Pipeline();            
-            p.AppendStep(new FillOverrideTables());
-            p.AppendStep(new BuildRenameMapStep());
-            p.AppendStep(new SaveRenameMap());
-            p.AppendStep(new RenameReferencesStep());
-            p.AppendStep(new RenameDefinitionsStep());         
+            Pipeline p = new Pipeline();
+            if (options.Merge)
+                p.AppendStep(new MergeAssembliesStep());
+         //   p.AppendStep(new RenameStep(GetRenamignOptions(options), GetReflectionOptions(options)));
             p.AppendStep(new OutputStep());
             return p;
         }

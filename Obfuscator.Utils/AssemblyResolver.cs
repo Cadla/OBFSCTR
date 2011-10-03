@@ -35,7 +35,6 @@ namespace Obfuscator.Utils
                 asm = base.Resolve(name, parameters);
                 _assemblies[name.Name] = asm;
             }
-
             return asm;
         }
 

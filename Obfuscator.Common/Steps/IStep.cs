@@ -26,8 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Obfuscator.Configuration;
-namespace Obfuscator.Steps
+namespace Obfuscator.Common.Steps
 {
     public interface IStep
     {

@@ -47,14 +47,14 @@ namespace Obfuscator
             TypeReference reference;
 
             // cashowanie tylko jezeli !TypeSpecification
-            //if (TryToGetReferenceFromCache(type, out reference))
-            //    return reference;
+            if (TryToGetReferenceFromCache(type, out reference))
+                return reference;
 
             if (type is TypeSpecification) //TODO || is open generic type ?
                 reference = ReferenceTypeSpecification(type, paramProviders);
 
             else if (type.IsGenericParameter)
-                reference = GetGenericParameter(type, paramProviders);
+                reference = GetGenericParameter((GenericParameter)type, paramProviders);
 
             else if (_toImport(type))
             {
@@ -71,9 +71,9 @@ namespace Obfuscator
                 {
                     reference = _module.Import(type);
                 }
+                _cache[type] = reference;
             }
 
-            _cache[type] = reference;
             return reference;
         }
 
@@ -85,6 +85,7 @@ namespace Obfuscator
             var declaringType = ReferenceType(field.DeclaringType, paramProviders);
 
             var providers = paramProviders.ToList();
+            providers.Clear();
             providers.Add(declaringType);
 
             var fieldType = ReferenceType(field.FieldType, providers.ToArray());
@@ -112,8 +113,7 @@ namespace Obfuscator
             };
 
             CopyGenericParameters(method, reference);
-            
-            
+                        
             var providers = paramProviders.ToList();
             providers.Clear();
             providers.Add(declaringType);
@@ -121,8 +121,7 @@ namespace Obfuscator
 
             CopyParameters(method, reference, providers.ToArray());
 
-            reference.ReturnType = ReferenceType(method.ReturnType, providers.ToArray());
-
+            reference.ReturnType = ReferenceType(method.ReturnType, providers.ToArray());            
             return reference;
         }
 
@@ -182,12 +181,11 @@ namespace Obfuscator
             }
         }
 
-        public TypeReference GetGenericParameter(TypeReference type, IGenericParameterProvider[] paramProviders)
+        public TypeReference GetGenericParameter(GenericParameter genericParamter, IGenericParameterProvider[] paramProviders)
         {
 #if GENERIC
-            var genericParameter = (GenericParameter)type;
-            IGenericParameterProvider context = GetContext(genericParameter, paramProviders);
-            return context.GenericParameters[genericParameter.Position];
+            IGenericParameterProvider context = GetContext(genericParamter, paramProviders);
+            return context.GenericParameters[genericParamter.Position];
 #else
             return type;
 #endif
@@ -246,7 +244,7 @@ namespace Obfuscator
                 return ((MethodReference)provider).GetElementMethod();
         }
 
-        private TypeReference CreateTypeReference(TypeReference type, params IGenericParameterProvider[] paramProviders)
+        public TypeReference CreateTypeReference(TypeReference type, params IGenericParameterProvider[] paramProviders)
         {
             TypeReference declaringType = null;
 

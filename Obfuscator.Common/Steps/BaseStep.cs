@@ -27,9 +27,8 @@
 //
 
 using Mono.Cecil;
-using Obfuscator.Configuration;
 
-namespace Obfuscator.Steps {
+namespace Obfuscator.Common.Steps {
 
 	public abstract class BaseStep : IStep {
 		
@@ -40,8 +39,7 @@ namespace Obfuscator.Steps {
             get { return _context; }
         }
 
-        //TODO: remove one of the parameters
-        public void Process(ObfuscationContext context)
+        public virtual void Process(ObfuscationContext context)
 		{			
             _context = context;
 
@@ -50,7 +48,7 @@ namespace Obfuscator.Steps {
 
 			Process ();
 
-            foreach (AssemblyDefinition assembly in _context.InputConfiguration.GetAssemblyDefinitions())
+            foreach (AssemblyDefinition assembly in _context.GetAssemblies())
                 ProcessAssembly(assembly);
 
 			EndProcess ();

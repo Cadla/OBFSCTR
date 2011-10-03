@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
-using Obfuscator.MetadataBuilder.Extensions;
 using Mono.Collections.Generic;
 
 namespace Obfuscator.MetadataBuilder

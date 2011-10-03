@@ -6,23 +6,24 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System.IO;
 using System.Collections;
-using Obfuscator.Configuration;
+using Obfuscator.Utils;
 
-namespace Obfuscator
+namespace Obfuscator.Common
 {
     public class ObfuscationContext
     {
+        private AssemblyResolver _resolver;
+        private ReaderParameters _readerParameters;
 
-        public ObfuscationOptions Options
+        HashSet<AssemblyDefinition> _assemblies = new HashSet<AssemblyDefinition>();
+        HashSet<AssemblyDefinition> _satelites = new HashSet<AssemblyDefinition>();
+
+        public bool Symbols { get; set; }
+
+        public IMemberFilter Filter
         {
             get;
-            private set;
-        }
-
-        public InputConfiguration InputConfiguration
-        {
-            get;
-            private set;
+            set;
         }
         
         public string OutputDirectory
@@ -31,101 +32,88 @@ namespace Obfuscator
             set;
         }
 
-        public Dictionary<AssemblyNameDefinition,
-            Dictionary<IMemberDefinition, string>> DefinitionsRenameMap
-        {
-            get;
-            private set;
+        public ObfuscationContext(bool symbols = false)        
+        {           
+             _resolver = new AssemblyResolver();
+             Symbols = symbols;
+            _readerParameters = new ReaderParameters() { ReadSymbols = Symbols };
+            Filter = new DefaultFilter();
         }
 
-        public Dictionary<AssemblyNameDefinition,
-            Dictionary<Resource, string>> ResourcesRenameMap
+        public ObfuscationContext(ObfuscationContext context)
         {
-            get;
-            private set;
+            _resolver = context._resolver;
+            _readerParameters = context._readerParameters;
+            _assemblies = context._assemblies;
+            _satelites = context._satelites;
+            Symbols = context.Symbols;
+            Filter = context.Filter;
+            OutputDirectory = context.OutputDirectory;
+
         }
 
-        //public Dictionary<AssemblyNameDefinition,
-        //    Dictionary<MemberReference, string>> ReferencesRenameMap
-        //{
-        //    get;
-        //    private set;
-        //}
-
-        public ObfuscationContext(InputConfiguration configuraiton, ObfuscationOptions options)        
+        public List<string> SearchDirectories
         {
-            InputConfiguration = configuraiton;
-            Options = options;
-
-            DefinitionsRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<IMemberDefinition, string>>();
-            ResourcesRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<Resource, string>>();
-     //       ReferencesRenameMap = new Dictionary<AssemblyNameDefinition, Dictionary<MemberReference, string>>();
+            get
+            {
+                return _resolver.GetSearchDirectories().ToList();
+            }
+        }
+        
+        public void AddSearchDirectory(string directory)
+        {
+            _resolver.AddSearchDirectory(directory);
         }
 
-        ////Pipeline _pipeline;
-        //string _outputDirectory;
-        //bool _linkSymbols;
+        public void AddAssembly(string name)
+        {
+            AddAssembly(Resolve(name));
+        }
 
-        //InputConfiguration _configuration;
+        public void AddAssembly(AssemblyDefinition assembly)
+        {
+            _assemblies.Add(assembly);
+        }
 
-        ////     AssemblyResolver _resolver;
-        //IList<AssemblyDefinition> _assemblies;
+        public void RemoveAssembly(string name)
+        {
+            RemoveAssembly(Resolve(name));
+        }
 
-        //   ReaderParameters _readerParameters;
-        //   ISymbolReaderProvider _symbolReaderProvider;
-        //   ISymbolWriterProvider _symbolWriterProvider;
+        public void RemoveAssembly(AssemblyDefinition assembly)
+        {
+            _assemblies.Remove(assembly);
+        }
 
-        //public Pipeline Pipeline
-        //{
-        //    get { return _pipeline; }
-        //}
+        public AssemblyDefinition Resolve(string name)
+        {
+            IMetadataScope scope;
+            if (File.Exists(name))
+                scope = AssemblyDefinition.ReadAssembly(name, _readerParameters).Name;
+            else
+                scope = new AssemblyNameReference(name, new Version());
+            return Resolve(scope);
+        }
 
+        public AssemblyDefinition Resolve(IMetadataScope scope)
+        {
+            AssemblyNameReference reference = GetReference(scope);
+            return _resolver.Resolve(reference, _readerParameters);
+        }
 
-        //public bool LinkSymbols
-        //{
-        //    get { return _linkSymbols; }
-        //    set { _linkSymbols = value; }
-        //}
+        static AssemblyNameReference GetReference(IMetadataScope scope)
+        {
+            AssemblyNameReference reference;
+            if (scope is ModuleDefinition)
+            {
+                AssemblyDefinition asm = ((ModuleDefinition)scope).Assembly;
+                reference = asm.Name;
+            }
+            else
+                reference = (AssemblyNameReference)scope;
 
-        //public AssemblyResolver Resolver
-        //{
-        //    get { return _resolver; }
-        //}
-
-        //public ISymbolReaderProvider SymbolReaderProvider
-        //{
-        //    get { return _symbolReaderProvider; }
-        //    set { _symbolReaderProvider = value; }
-        //}
-
-        //public ISymbolWriterProvider SymbolWriterProvider
-        //{
-        //    get { return _symbolWriterProvider; }
-        //    set { _symbolWriterProvider = value; }
-        //}
-
-
-
-        //public Dictionary<string, string> Namespaces
-        //{
-        //    get;
-        //    set;
-        //}
-
-
-
-        //public ObfuscationContext(Pipeline pipeline, AssemblyResolver resolver)
-        //{
-        //    _pipeline = pipeline;
-        //    //_resolver = resolver;
-        //    //_readerParameters = new ReaderParameters
-        //    //{
-        //    //    AssemblyResolver = _resolver,
-        //    //    ReadSymbols = true
-        //    //};
-        //    _assemblies = new List<AssemblyDefinition>();
-        //    Namespaces = new Dictionary<string, string>();
-        //}
+            return reference;
+        }
 
         //public TypeDefinition GetType (string fullName)
         //{
@@ -148,13 +136,14 @@ namespace Obfuscator
         //}
 
 
-        //public AssemblyDefinition[] GetAssemblies()
-        //{
-        //    //IDictionary cache = _resolver.AssemblyCache;
-        //    //AssemblyDefinition[] asms = new AssemblyDefinition[cache.Count];
-        //    //cache.Values.CopyTo(asms, 0);
-        //    //return asms;
-        //    return _assemblies.ToArray();
-        //}
+        public AssemblyDefinition[] GetAssemblies()
+        {
+            //IDictionary cache = _resolver.AssemblyCache;
+            //AssemblyDefinition[] asms = new AssemblyDefinition[cache.Count];
+            //cache.Values.CopyTo(asms, 0);
+            AssemblyDefinition[] asms = new AssemblyDefinition[_assemblies.Count];
+            _assemblies.CopyTo(asms, 0);
+            return asms;
+        }
     }
 }
