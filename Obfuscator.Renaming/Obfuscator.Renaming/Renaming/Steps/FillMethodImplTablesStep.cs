@@ -36,9 +36,14 @@ namespace Obfuscator.Renaming.Steps
                 foreach (var method in key.Value)
                 {
                     Debug.Assert(method.Module == implementation.Module);
-                        
-                    if(!implementation.Overrides.Contains(method))
+
+                    if (!implementation.Overrides.Contains(method))
+                    {
+                        // New slot needs to be reserved for this method so the method is not mistaken
+                        // to be overriding inherited virtual methods with accidentaly the same name and signature
+                        implementation.IsNewSlot = true;
                         implementation.Overrides.Add(method);
+                    }
                 }
             }
         }

@@ -84,7 +84,7 @@ namespace Obfuscator
             Pipeline p = new Pipeline();
             if (options.Merge)
                 p.AppendStep(new MergeAssembliesStep());
-         //   p.AppendStep(new RenameStep(GetRenamignOptions(options), GetReflectionOptions(options)));
+            p.AppendStep(new RenameStep(GetRenamignOptions(options), GetReflectionOptions(options)));
             p.AppendStep(new OutputStep());
             return p;
         }
