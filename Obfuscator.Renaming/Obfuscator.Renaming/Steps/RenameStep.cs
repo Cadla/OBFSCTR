@@ -30,7 +30,7 @@ namespace Obfuscator.Renaming.Steps
             _pipeline.AppendStep(new FillMethodImplTablesStep());
             _pipeline.AppendStep(new BuildRenameMapStep(nameGenerator));
 
-            if (_renamingOptions.HasFlag(RenamingOptions.Reflection) && _reflectionOptions != null)
+            if (_renamingOptions.HasFlag(RenamingOptions.Reflection))
                 _pipeline.AppendStep(new InjectReflectionMethodProxies(_reflectionOptions, keepNamespaces));
 
             if (_renamingOptions.HasFlag(RenamingOptions.SaveRenameMap))

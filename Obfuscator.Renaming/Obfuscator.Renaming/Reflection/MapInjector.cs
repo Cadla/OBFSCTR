@@ -26,7 +26,8 @@ namespace Obfuscator.Renaming.Reflection
             var mapModule = ModuleDefinition.ReadModule(typeof(Map).Module.FullyQualifiedName);
             var mapTypeDefinition = mapModule.GetType(typeof(Map).FullName);
 
-            string destinationName = String.Concat(MAP_NAME_PREFIX, '{', GUID, '}');
+            //string destinationName = String.Concat(MAP_NAME_PREFIX, '{', GUID, '}');
+            string destinationName = "Map";
 
             ReferenceResolver resolver = new ReferenceResolver(module, Helper.IsCore);
             resolver.Action = delegate(TypeReference typeReference)
@@ -215,3 +216,4 @@ namespace Obfuscator.Renaming.Reflection
         }
     }
 }
+//Note: Microsoft has defined a Backus-Naur Form grammar for type names and assemblyqualified type names that is used for constructing strings that will be passed to reflection methods. Knowledge of the grammar can come in quite handy when you are using reflection, specifically if you are working with nested types, generic types, generic methods, reference parameters, or arrays. For the complete grammar, see the FCL documentation or do a Web search for “Backus-Naur Form Grammar for Type Names.” You can also look at Type’s MakeArrayType, MakeByRefType, MakeGenericType, and MakePointerType methods.

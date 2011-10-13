@@ -116,9 +116,9 @@ namespace Obfuscator.Renaming.Reflection
             return false;
         }
 
-        // System.Reflaction.Assembly::GetType(string)
-        // System.Reflaction.Assembly::GetType(string, bool)
-        // System.Reflaction.Assembly::GetType(string, bool, bool)
+        // System.Reflection.Assembly::GetType(string)
+        // System.Reflection.Assembly::GetType(string, bool)
+        // System.Reflection.Assembly::GetType(string, bool, bool)
         public static bool IsGetTypeFromAssembly(MethodReference method)
         {
             if (method.DeclaringType.FullName != "System.Reflection.Assembly")

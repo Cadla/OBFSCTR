@@ -76,7 +76,7 @@ namespace Obfuscator
 
         private static ReflectionOptions GetReflectionOptions(Options options)
         {            
-            return ReflectionOptions.Types;                                            
+            return ReflectionOptions.Types | ReflectionOptions.Methods | ReflectionOptions.Fields | ReflectionOptions.Properties | ReflectionOptions.NestedTypes;                                            
         }
 
         static Pipeline GetPipeline(Options options)

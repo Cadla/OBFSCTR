@@ -105,41 +105,51 @@ namespace Obfuscator.Renaming.Reflection.Steps
                         //TODO: Refactor, duplicated code
                         switch (proxyType)
                         {
-                            case ReflectionMethodProxy.GetTypeName:
-                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Call, getTypeName));
+                            case ReflectionMethodProxy.GetTypeName:                                
+                                processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getTypeName));
                                 break;
                             case ReflectionMethodProxy.GetFieldName:
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getFieldName));
                                 break;
                             case ReflectionMethodProxy.GetEventName:
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getEventName));
                                 break;
                             case ReflectionMethodProxy.GetNestedTypeName:
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getNestedTypeName));
                                 break;
                             case ReflectionMethodProxy.GetTypeNameFromAssembly:
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Call, getTypeNameFromAssembly));
                                 break;
-                            case ReflectionMethodProxy.GetMethodName:
-                                Queue<Instruction> loadSecondParameter = MethodCallStackFrame.LoadParameter(closure, 1);
-                                processor.InsertBefore(closure.methodCall,
-                                    processor.Create(OpCodes.Call, getMetodName));
-                                foreach (var x in loadSecondParameter)
-                                    processor.InsertBefore(closure.methodCall, x);
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
+                            //case ReflectionMethodProxy.GetMethodName:
+                            //    Queue<Instruction> loadSecondParameter = MethodCallStackFrame.LoadParameter(closure, 1);
+                            //    processor.InsertBefore(closure.methodCall,
+                            //        processor.Create(OpCodes.Call, getMetodName));
+                            //    foreach (var x in loadSecondParameter)
+                            //        processor.InsertBefore(closure.methodCall, x);
+                            //    processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
+                            //    break;
+                            //case ReflectionMethodProxy.GetPropertyName:
+                            //    Queue<Instruction> loadSecondParameter2 = MethodCallStackFrame.LoadParameter(closure, 1);
+                            //    processor.InsertBefore(closure.methodCall,
+                            //        processor.Create(OpCodes.Call, getPropertyName));
+                            //    foreach (var x in loadSecondParameter2)
+                            //        processor.InsertBefore(closure.methodCall, x);
+                            //    processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
+                            //    break;
+                            case ReflectionMethodProxy.GetMethodName:                                
+                                processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getMetodName));
+                                processor.InsertBefore(closure.methodCall, closure.parameters[2]);
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 break;
-                            case ReflectionMethodProxy.GetPropertyName:
-                                Queue<Instruction> loadSecondParameter2 = MethodCallStackFrame.LoadParameter(closure, 1);
-                                processor.InsertBefore(closure.methodCall,
-                                    processor.Create(OpCodes.Call, getPropertyName));
-                                foreach (var x in loadSecondParameter2)
-                                    processor.InsertBefore(closure.methodCall, x);
-                                processor.InsertAfter(closure.thisLoad, processor.Create(OpCodes.Dup));
-                                break;                              
+                            case ReflectionMethodProxy.GetPropertyName:                                
+                                processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getPropertyName));
+                                processor.InsertBefore(closure.methodCall, closure.parameters[2]);
+                                processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
+                                break;
                         }
                     }
                     // Fix offsets after adding new instructions

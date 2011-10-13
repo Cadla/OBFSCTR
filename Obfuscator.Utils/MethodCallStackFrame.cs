@@ -12,60 +12,69 @@ namespace Obfuscator.Utils
         public MethodReference method;
         public Instruction[] parameters;
         public Instruction methodCall;
-        public Instruction thisLoad;
-        public OpCode opCode;
+        //public OpCode opCode;
 
-        public static Queue<Instruction> LoadParameter(MethodCallStackFrame closure, int index)
-        {
-            var loadParameter = new Queue<Instruction>();
-            Instruction current;
-            if(index == 0)
-                current = closure.thisLoad;
-            else
-                current = closure.parameters[index - 1];
+        //public static Queue<Instruction> LoadParameter(MethodCallStackFrame closure, int index)
+        //{
+        //    //var loadParameter = new Queue<Instruction>();
+        //    //Instruction current;
+        //    ////if(index == 0)
+        //    ////    current = closure.thisLoad;
+        //    ////else
+        //    //    current = closure.parameters[index - 1];
 
-            while (current != closure.parameters[index])
-            {
-                current = current.Next;
-                loadParameter.Enqueue(current);
-            }
-            return loadParameter;
-        }
+        //    //while (current != closure.parameters[index])
+        //    //{
+        //    //    current = current.Next;
+        //    //    loadParameter.Enqueue(current);
+        //    //}
+        //    //return loadParameter;            
+        //}
 
         public static MethodCallStackFrame GetMethodCallStackFrame(Instruction methodCall, MethodReference methodReference)
         {
-            var parametersCount = methodReference.Parameters.Count;
+            var parametersCount = methodReference.Parameters.Count + (methodReference.HasThis ? 1 : 0);
 
-            MethodCallStackFrame closure = new MethodCallStackFrame();
-            closure.method = methodReference;
-            closure.methodCall = methodCall;
-            closure.parameters = new Instruction[parametersCount];
-            closure.opCode = methodCall.OpCode;
-
-            var paramCount = parametersCount + 1;  // +1 is for 'this'
-            var paramsToLoad = parametersCount;
-
-
-            var current = methodCall;
-            while (--paramCount != 0)
+            MethodCallStackFrame closure = new MethodCallStackFrame()
             {
-                current = current.Previous;
+                method = methodReference,
+                methodCall = methodCall,
+                parameters = new Instruction[parametersCount]
+            };
 
-                if (paramCount == paramsToLoad)
-                    closure.parameters[--paramsToLoad] = current;
+            var paramLoadingInst = parametersCount; // +1 for the method call
 
+            var paramToLoad = parametersCount - 1;
+            var current = methodCall;
+            while(paramLoadingInst != 0)
+            {
+                current = current.Previous; 
                 int stackModifier = GetPositiveModifier(current.OpCode) - GetNegativeModifier(current.OpCode);
-                if (stackModifier < 1)
-                    paramCount += stackModifier * (-1) + 1;
-                if (stackModifier > 1)
-                    paramCount -= stackModifier;
+
+                if(IsMethodCall(current.OpCode)){
+                    var method = current.Operand as MethodReference;
+                    stackModifier += (method.ReturnType.FullName == "System.Void" ? 0 : 1) - method.Parameters.Count;
+                }
+
+                if (stackModifier != 0)
+                    paramLoadingInst -= stackModifier;
+
+                //if (stackModifier >= 1)
+                //    paramLoadingInst -= stackModifier;
+
+                if (paramLoadingInst == paramToLoad)
+                    closure.parameters[paramToLoad--] = current;
             }
 
-            if (methodReference.HasThis == false)
-                closure.thisLoad = current;
-            else
-                closure.thisLoad = current.Previous;
+            //if (methodReference.HasThis != false)
+            //    closure.thisLoad = current.Previous;
+            
             return closure;
+        }
+
+        private static bool IsMethodCall(OpCode opCode)
+        {
+            return opCode == OpCodes.Call || opCode == OpCodes.Calli || opCode == OpCodes.Callvirt;
         }
 
         private static int GetNegativeModifier(OpCode opCode)

@@ -91,14 +91,14 @@ namespace Obfuscator.Renaming.Reflection
         internal static string GetMemberName(string input)
         {
 #if HASH
-            return GetMd5Hash(input);
+            return GetHash(input);
 #else
             return input;
 #endif
         }
 
 #if HASH
-        private static string GetMd5Hash(string input)
+        private static string GetHash(string input)
         {
             byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(input));
             StringBuilder sBuilder = new StringBuilder();
