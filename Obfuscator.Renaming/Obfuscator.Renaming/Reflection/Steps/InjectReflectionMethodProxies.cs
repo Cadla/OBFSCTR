@@ -101,7 +101,7 @@ namespace Obfuscator.Renaming.Reflection.Steps
                     ILProcessor processor = body.GetILProcessor();
                     foreach (var closure in closures)
                     {
-                        var proxyType = supportedMethods[closure.method];
+                        var proxyType = supportedMethods[closure.methodReference];
                         //TODO: Refactor, duplicated code
                         switch (proxyType)
                         {
@@ -142,12 +142,32 @@ namespace Obfuscator.Renaming.Reflection.Steps
                             //    break;
                             case ReflectionMethodProxy.GetMethodName:                                
                                 processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getMetodName));
-                                processor.InsertBefore(closure.methodCall, closure.parameters[2]);
+                                if (MethodCallStackFrame.IsMethodCall(closure.parameters[2].OpCode))
+                                { 
+                                    var m = closure.parameters[2].Operand as MethodReference;
+                                    var v = new VariableDefinition(m.ReturnType);
+                                    body.Variables.Add(v);
+                                    processor.InsertAfter(closure.parameters[2], processor.Create(OpCodes.Ldloc_S, v));
+                                    processor.InsertAfter(closure.parameters[2], processor.Create(OpCodes.Stloc_S, v));
+                                    processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Ldloc_S, v));
+                                }
+                                else
+                                    processor.InsertBefore(closure.methodCall, closure.parameters[2]);                                
                                 processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 break;
                             case ReflectionMethodProxy.GetPropertyName:                                
-                                processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getPropertyName));
-                                processor.InsertBefore(closure.methodCall, closure.parameters[2]);
+                                      processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Call, getPropertyName));
+                                if (MethodCallStackFrame.IsMethodCall(closure.parameters[2].OpCode))
+                                { 
+                                    var m = closure.parameters[2].Operand as MethodReference;
+                                    var v = new VariableDefinition(m.ReturnType);
+                                    body.Variables.Add(v);
+                                    processor.InsertAfter(closure.parameters[2], processor.Create(OpCodes.Ldloc_S, v));
+                                    processor.InsertAfter(closure.parameters[2], processor.Create(OpCodes.Stloc_S, v));
+                                    processor.InsertBefore(closure.methodCall, processor.Create(OpCodes.Ldloc_S, v));
+                                }
+                                else
+                                    processor.InsertBefore(closure.methodCall, closure.parameters[2]);                                
                                 processor.InsertAfter(closure.parameters[0], processor.Create(OpCodes.Dup));
                                 break;
                         }
@@ -167,7 +187,7 @@ namespace Obfuscator.Renaming.Reflection.Steps
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null && supportedMethods.ContainsKey(methodReference))
                 {
-                    var frame = MethodCallStackFrame.GetMethodCallStackFrame(instruction, methodReference);
+                    var frame = MethodCallStackFrame.GetMethodCallStackFrame(instruction);
                     methodCalls.Add(frame);
                 }
             }
